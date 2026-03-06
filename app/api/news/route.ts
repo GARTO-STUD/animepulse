@@ -14,9 +14,7 @@ const WORKER_URL = process.env.WORKER_URL || 'https://animepulse.your-account.wo
 export async function GET() {
   try {
     // Try to fetch from Worker first
-    const response = await fetch(`${WORKER_URL}/news`, {
-      cf: { cacheTtl: 300 }, // Cache for 5 minutes
-    });
+    const response = await fetch(`${WORKER_URL}/news`);
     
     if (response.ok) {
       const data = await response.json();
