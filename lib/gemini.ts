@@ -77,7 +77,7 @@ And 3-5 relevant tags at the end, separated by "---TAGS---" (comma-separated)
     const summaryParts = rest.split('---TAGS---');
     const summary = summaryParts[0]?.trim() || newsItem.description;
     const tagsString = summaryParts[1]?.trim() || '';
-    const tags = tagsString.split(',').map(t => t.trim()).filter(t => t);
+    const tags = tagsString.split(',').map((t: string) => t.trim()).filter((t: string) => t);
 
     // Calculate read time (approx 200 words per minute)
     const wordCount = content.split(/\s+/).length;
