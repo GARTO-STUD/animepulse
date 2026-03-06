@@ -16,22 +16,52 @@ export interface AnimeNewsItem {
 const RSS_SOURCES = [
   {
     name: 'Crunchyroll News',
-    url: 'https://feeds.feedburner.com/crunchyroll/animenews',
-    category: 'News',
-  },
-  {
-    name: 'Anime News Network',
-    url: 'https://www.animenewsnetwork.com/news/rss.xml',
+    url: 'https://www.crunchyroll.com/newsfeed',
     category: 'News',
   },
   {
     name: 'MyAnimeList News',
-    url: 'https://myanimelist.net/rss/news.xml',
+    url: 'https://myanimelist.net/rss/news.rss',
+    category: 'News',
+  },
+  {
+    name: 'Anime News Network',
+    url: 'https://www.animenewsnetwork.com/all/rss.xml',
     category: 'News',
   },
   {
     name: 'Funimation Blog',
-    url: 'https://blog.funimation.com/feed/',
+    url: 'https://www.funimation.com/feed/',
+    category: 'News',
+  },
+  {
+    name: 'Anime Planet',
+    url: 'https://www.anime-planet.com/rss/news.xml',
+    category: 'News',
+  },
+  {
+    name: 'Otaku USA Magazine',
+    url: 'https://otakuusamagazine.com/feed/',
+    category: 'News',
+  },
+  {
+    name: 'Anime UK News',
+    url: 'https://animeuknews.net/feed/',
+    category: 'News',
+  },
+  {
+    name: 'Manga Updates',
+    url: 'https://www.mangaupdates.com/rss/news.xml',
+    category: 'News',
+  },
+  {
+    name: 'Otaku Mode',
+    url: 'https://otakumode.com/feed',
+    category: 'News',
+  },
+  {
+    name: 'AniTrendz',
+    url: 'https://anitrendz.net/rss',
     category: 'News',
   },
 ];
