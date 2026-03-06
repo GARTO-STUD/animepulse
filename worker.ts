@@ -27,22 +27,29 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const secret = url.searchParams.get('secret');
-    
-    if (secret !== env.CRON_SECRET) {
-      return jsonResponse({ error: 'Unauthorized' }, 401);
-    }
-    
-    if (url.pathname === '/auto-pilot') {
-      const result = await runAutoPilot(env);
-      return jsonResponse(result);
-    }
-    
+
+    // PUBLIC endpoint - no auth required (for website)
     if (url.pathname === '/news') {
       const news = await getStoredNews(env);
       return jsonResponse({ news, total: news.length });
     }
-    
-    return jsonResponse({ message: 'AnimePulse Worker Running' });
+
+    // Health check endpoint
+    if (url.pathname === '/') {
+      return jsonResponse({ message: 'AnimePulse Worker Running', version: '1.0.0' });
+    }
+
+    // PROTECTED endpoints - require secret
+    if (secret !== env.CRON_SECRET) {
+      return jsonResponse({ error: 'Unauthorized - valid secret required' }, 401);
+    }
+
+    if (url.pathname === '/auto-pilot') {
+      const result = await runAutoPilot(env);
+      return jsonResponse(result);
+    }
+
+    return jsonResponse({ error: 'Not Found' }, 404);
   },
 
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
@@ -52,19 +59,19 @@ export default {
 
 async function runAutoPilot(env: Env) {
   const results = { newsFetched: 0, articlesGenerated: 0, telegramPosted: 0 };
-  
+
   try {
     const newsItems = getSampleNews();
     results.newsFetched = newsItems.length;
-    
+
     const existingNews = await getStoredNews(env);
     const existingTitles = new Set(existingNews.map(n => n.title.toLowerCase()));
-    
+
     for (const item of newsItems.slice(0, 3)) {
       if (existingTitles.has(item.title.toLowerCase())) continue;
-      
+
       const article = await generateArticle(item, env);
-      
+
       const newsItem: NewsItem = {
         id: generateId(),
         title: article.title,
@@ -76,18 +83,18 @@ async function runAutoPilot(env: Env) {
         tags: article.tags,
         postedToTelegram: false,
       };
-      
+
       existingNews.unshift(newsItem);
       results.articlesGenerated++;
-      
+
       if (env.TELEGRAM_BOT_TOKEN) {
         const posted = await postToTelegram(newsItem, env);
         if (posted) results.telegramPosted++;
       }
     }
-    
+
     await env.ANIMEPULSE_KV.put('news', JSON.stringify(existingNews.slice(0, 50)));
-    
+
     return { success: true, ...results, timestamp: new Date().toISOString() };
   } catch (error) {
     return { success: false, error: String(error), ...results };
@@ -115,7 +122,7 @@ Tags after ---TAGS--- (comma-separated)`;
       tags: ['anime', 'news'],
     };
   }
-  
+
   try {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${env.GEMINI_API_KEY}`,
@@ -128,13 +135,13 @@ Tags after ---TAGS--- (comma-separated)`;
         }),
       }
     );
-    
+
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    
+
     const [content, rest] = text.split('---SUMMARY---');
     const [summary, tagsStr] = (rest || '').split('---TAGS---');
-    
+
     return {
       title: item.title,
       content: content?.trim() || `# ${item.title}`,
@@ -153,7 +160,7 @@ Tags after ---TAGS--- (comma-separated)`;
 
 async function postToTelegram(newsItem: NewsItem, env: Env): Promise<boolean> {
   const message = `🎌 **${newsItem.title}**\n\n${newsItem.summary}\n\n🔗 ${newsItem.url}\n\n📢 @AnimePulseChannel`;
-  
+
   try {
     const response = await fetch(
       `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,

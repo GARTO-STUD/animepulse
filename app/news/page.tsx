@@ -1,137 +1,171 @@
+'use client';
+
 import Link from 'next/link';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-const newsItems = [
-  {
-    id: 1,
-    title: 'Attack on Titan Final Season Part 4 Release Date Announced',
-    excerpt: 'The epic conclusion to the Attack on Titan saga finally has a confirmed release date.',
-    date: '2025-03-01',
-    readTime: '5 min read',
-    category: 'Announcement',
-    image: 'AOT',
-  },
-  {
-    id: 2,
-    title: 'New Studio Ghibli Film in Production',
-    excerpt: 'Hayao Miyazaki is working on another project despite saying he would retire.',
-    date: '2025-02-28',
-    readTime: '3 min read',
-    category: 'News',
-    image: 'SG',
-  },
-  {
-    id: 3,
-    title: 'Jujutsu Kaisen Season 3 Confirmed',
-    excerpt: 'The adaptation of the Culling Game arc is officially announced.',
-    date: '2025-02-25',
-    readTime: '4 min read',
-    category: 'Announcement',
-    image: 'JJK',
-  },
-  {
-    id: 4,
-    title: 'Crunchyroll Reveals Most Watched Anime of 2024',
-    excerpt: 'The streaming giant releases their year-end statistics.',
-    date: '2025-02-20',
-    readTime: '6 min read',
-    category: 'Industry',
-    image: 'CR',
-  },
-  {
-    id: 5,
-    title: 'One Piece Manga Reaches Major Milestone',
-    excerpt: 'Eiichiro Oda celebrates 27 years of the beloved series.',
-    date: '2025-02-18',
-    readTime: '4 min read',
-    category: 'Manga',
-    image: 'OP',
-  },
-];
+interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  publishedAt: string;
+  source: string;
+  tags: string[];
+}
 
-export const metadata = {
-  title: 'Anime News | AnimePulse',
-  description: 'Latest anime news, announcements, and industry updates.',
-};
+const WORKER_URL = 'https://animepulse.asac-spy10.workers.dev';
 
 export default function NewsPage() {
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const response = await fetch(`${WORKER_URL}/news`);
+        if (!response.ok) throw new Error('Failed to fetch news');
+        const data = await response.json();
+        setNewsItems(data.news || []);
+      } catch (err) {
+        setError('Unable to load news from server');
+        console.error('News fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNews();
+  }, []);
+
+  // Fallback static data if Worker has no data
+  const fallbackNews: NewsItem[] = [
+    {
+      id: '1',
+      title: 'Attack on Titan Final Season Part 4 Release Date Announced',
+      summary: 'The epic conclusion to the Attack on Titan saga finally has a confirmed release date.',
+      content: 'The epic conclusion to the Attack on Titan saga finally has a confirmed release date. Fans have been waiting for this moment.',
+      publishedAt: new Date().toISOString(),
+      source: 'Crunchyroll News',
+      tags: ['anime', 'announcement'],
+    },
+    {
+      id: '2',
+      title: 'Jujutsu Kaisen Season 3 Confirmed',
+      summary: 'The adaptation of the Culling Game arc is officially announced.',
+      content: 'Jujutsu Kaisen Season 3 has been confirmed, bringing excitement to fans worldwide.',
+      publishedAt: new Date(Date.now() - 3600000).toISOString(),
+      source: 'Anime News Network',
+      tags: ['anime', 'announcement'],
+    },
+  ];
+
+  const displayItems = newsItems.length > 0 ? newsItems : fallbackNews;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto"></div>
+          <p className="text-gray-400 mt-4">Loading latest anime news...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Latest Anime News</h1>
+          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
+            <Newspaper className="w-10 h-10 text-indigo-400 mr-3" />
+            Anime News
+          </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Stay updated with the latest announcements, releases, and industry news.
+            The latest updates from the anime world, powered by AnimePulse Auto-Pilot
           </p>
+          {error && (
+            <div className="mt-4 text-yellow-500 text-sm">
+              {error} • Showing cached content
+            </div>
+          )}
+          {newsItems.length === 0 && !error && (
+            <div className="mt-4 text-blue-400 text-sm">
+              Auto-Pilot is running! News will appear here automatically.
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Featured Article */}
-          <div className="lg:col-span-2">
-            <article className="bg-gray-800 rounded-2xl overflow-hidden">
-              <div className="h-64 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                <span className="text-6xl font-black text-white/20">{newsItems[0].image}</span>
+        {/* Featured Article */}
+        {displayItems[0] && (
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
+            <div className="flex flex-col md:flex-row items-center">
+              <div className="flex-1 mb-6 md:mb-0">
+                <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {displayItems[0].tags?.[0] || 'Featured'}
+                </span>
+                <h2 className="text-3xl font-bold text-white mt-4 mb-4">
+                  {displayItems[0].title}
+                </h2>
+                <p className="text-white/80 mb-4">{displayItems[0].summary}</p>
+                <div className="flex items-center text-white/70 text-sm">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {new Date(displayItems[0].publishedAt).toLocaleDateString()}
+                </div>
               </div>
-              <div className="p-8">
-                <span className="text-indigo-400 text-sm font-semibold">{newsItems[0].category}</span>
-                <h2 className="text-2xl font-bold text-white mt-2 mb-4">{newsItems[0].title}</h2>
-                <p className="text-gray-400 mb-6">{newsItems[0].excerpt}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {newsItems[0].date}
+              <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-white text-3xl font-black">
+                {displayItems[0].source?.slice(0, 2).toUpperCase() || 'AP'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* News Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {displayItems.map((item) => (
+            <article
+              key={item.id}
+              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-colors"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-indigo-400 text-sm font-semibold">
+                    {item.source}
+                  </span>
+                  {item.tags?.[0] && (
+                    <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs">
+                      {item.tags[0]}
                     </span>
-                    <span className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {newsItems[0].readTime}
-                    </span>
+                  )}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-gray-400 mb-4">{item.summary}</p>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center text-gray-500">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {new Date(item.publishedAt).toLocaleDateString()}
                   </div>
-                  <Link href="#" className="text-indigo-400 hover:text-indigo-300 flex items-center">
-                    Read More <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
+                  <div className="flex items-center text-gray-500">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {'3 min read'}
+                  </div>
                 </div>
               </div>
             </article>
-          </div>
-
-          {/* Sidebar - Trending */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-white mb-4">Trending</h3>
-            {newsItems.slice(1, 4).map((item) => (
-              <div key={item.id} className="bg-gray-800 p-4 rounded-xl">
-                <span className="text-indigo-400 text-xs font-semibold">{item.category}</span>
-                <h4 className="text-white font-medium mt-1 mb-2">{item.title}</h4>
-                <span className="text-gray-500 text-sm">{item.date}</span>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
 
-        {/* More News */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold text-white mb-8">More News</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newsItems.map((item) => (
-              <article key={item.id} className="bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-transform">
-                <div className="h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center">
-                  <span className="text-3xl font-black text-white/20">{item.image}</span>
-                </div>
-                <div className="p-6">
-                  <span className="text-indigo-400 text-sm font-semibold">{item.category}</span>
-                  <h3 className="text-white font-bold mt-2 mb-2 line-clamp-2">{item.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">{item.excerpt}</p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {item.date}
-                    </span>
-                    <span>{item.readTime}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+        {/* Stats */}
+        <div className="mt-16 text-center">
+          <p className="text-gray-400">
+            Showing {displayItems.length} article{displayItems.length !== 1 ? 's' : ''}
+            {newsItems.length > 0 && ' from Auto-Pilot'}
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Updates every 6 hours • Powered by RSS & AI
+          </p>
         </div>
       </div>
     </div>
