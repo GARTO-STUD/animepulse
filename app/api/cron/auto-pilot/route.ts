@@ -35,6 +35,7 @@ interface NewsItem {
 // For Cloudflare Pages, we'll store in a global variable
 // In production, use Cloudflare KV or D1 Database
 declare global {
+  // eslint-disable-next-line no-var
   var newsCache: NewsItem[];
 }
 
@@ -202,7 +203,7 @@ async function fetchNewsWithFallback() {
     const rss = await import('@/lib/rssParser');
     const items = await rss.fetchAnimeRSS();
     if (items.length > 0) return items;
-  } catch (e) {
+  } catch {
     console.log('RSS fetch failed, using fallback');
   }
 

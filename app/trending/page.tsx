@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, Star, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TrendingUp, Star, Eye } from 'lucide-react';
 
 const trendingAnime = [
   {

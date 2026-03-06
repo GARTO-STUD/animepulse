@@ -98,7 +98,7 @@ export default function NewsPage() {
           {/* Sidebar - Trending */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-white mb-4">Trending</h3>
-            {newsItems.slice(1, 4).map((item, index) => (
+            {newsItems.slice(1, 4).map((item) => (
               <div key={item.id} className="bg-gray-800 p-4 rounded-xl">
                 <span className="text-indigo-400 text-xs font-semibold">{item.category}</span>
                 <h4 className="text-white font-medium mt-1 mb-2">{item.title}</h4>

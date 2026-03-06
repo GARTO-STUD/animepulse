@@ -36,7 +36,14 @@ export async function sendToTelegram(post: TelegramPost): Promise<boolean> {
     message += `📢 @AnimePulseChannel`;
 
     // Prepare request body
-    const body: any = {
+    interface TelegramRequestBody {
+      chat_id: string;
+      text: string;
+      parse_mode: string;
+      disable_web_page_preview: boolean;
+    }
+
+    const body: TelegramRequestBody = {
       chat_id: TELEGRAM_CHANNEL_ID,
       text: message,
       parse_mode: 'Markdown',
