@@ -17,9 +17,9 @@
  *   - full: Run complete workflow (default)
  */
 
-import { fetchAnimeRSS, getSampleAnimeNews } from '../lib/rssParser';
-import { generateArticle, generateTrendingAnalysis } from '../lib/gemini';
-import { sendToTelegram, sendTrendingUpdate, testTelegramConnection } from '../lib/telegram';
+import { fetchAnimeRSS, getSampleAnimeNews } from '../lib/rssParser.ts';
+import { generateArticle, generateTrendingAnalysis } from '../lib/gemini.ts';
+import { sendToTelegram, sendTrendingUpdate, testTelegramConnection } from '../lib/telegram.ts';
 import * as fs from 'fs';
 import * as path from 'path';
 
