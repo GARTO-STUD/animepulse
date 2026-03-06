@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Import the logic from scripts
-import { fetchAnimeRSS } from '@/lib/rssParser';
+// import { fetchAnimeRSS } from '@/lib/rssParser'; // Imported dynamically below
 import { generateArticle } from '@/lib/gemini';
 import { sendToTelegram } from '@/lib/telegram';
 
