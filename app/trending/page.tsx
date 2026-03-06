@@ -62,11 +62,6 @@ const trendingAnime = [
 
 const categories = ['All', 'Action', 'Adventure', 'Fantasy', 'Slice of Life', 'Sports'];
 
-export const metadata = {
-  title: 'Trending Anime | AnimePulse',
-  description: 'Discover the hottest anime everyone is watching right now.',
-};
-
 export default function TrendingPage() {
   const [activeCategory, setActiveCategory] = useState('All');
 

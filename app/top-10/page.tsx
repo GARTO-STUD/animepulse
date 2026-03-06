@@ -109,8 +109,7 @@ export default function TopTenPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-white">Top 10 Anime</h1>
           </div>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            The definitive ranking of the greatest anime of all time, 
-            carefully curated by our community.
+            The definitive ranking of the greatest anime of all time, carefully curated by our community.
           </p>
         </div>
 
@@ -139,7 +138,7 @@ export default function TopTenPage() {
 
         {/* Top 10 List */}
         <div className="space-y-4">
-          {topAnime.map((anime, index) => (
+          {topAnime.map((anime) => (
             <div
               key={anime.rank}
               className={`flex flex-col md:flex-row gap-4 p-6 rounded-xl transition-all hover:transform hover:scale-[1.02] ${
@@ -176,9 +175,7 @@ export default function TopTenPage() {
                     <span className="font-bold">{anime.rating}</span>
                   </div>
                 </div>
-
                 <p className="text-gray-400 mb-3">{anime.reason}</p>
-
                 <div className="flex flex-wrap gap-2 text-sm">
                   <span className="text-gray-500">{anime.episodes} episodes</span>
                   <span className="text-gray-600">|</span>
@@ -206,4 +203,19 @@ export default function TopTenPage() {
               <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-6 h-6 text-purple-400" />
               </div>
-              <h3 className="text-white font-bold mb-2">Impact
+              <h3 className="text-white font-bold mb-2">Impact</h3>
+              <p className="text-gray-400 text-sm">Cultural influence and legacy</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trophy className="w-6 h-6 text-pink-400" />
+              </div>
+              <h3 className="text-white font-bold mb-2">Legacy</h3>
+              <p className="text-gray-400 text-sm">Long-term influence on the industry</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
