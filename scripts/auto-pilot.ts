@@ -1,4 +1,4 @@
-#!/usr/bin/env -S npx ts-node --project tsconfig.scripts.json
+#!/usr/bin/env -S npx tsx
 /**
  * AnimePulse Auto-Pilot System
  * 
