@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -11,6 +10,8 @@ interface NewsItem {
   content: string;
   publishedAt: string;
   source: string;
+  imageUrl?: string;
+  sourceUrl?: string;
   tags: string[];
 }
 
@@ -48,6 +49,7 @@ export default function NewsPage() {
       content: 'The epic conclusion to the Attack on Titan saga finally has a confirmed release date. Fans have been waiting for this moment.',
       publishedAt: new Date().toISOString(),
       source: 'Crunchyroll News',
+      imageUrl: 'https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=1000&auto=format&fit=crop',
       tags: ['anime', 'announcement'],
     },
     {
@@ -57,6 +59,7 @@ export default function NewsPage() {
       content: 'Jujutsu Kaisen Season 3 has been confirmed, bringing excitement to fans worldwide.',
       publishedAt: new Date(Date.now() - 3600000).toISOString(),
       source: 'Anime News Network',
+      imageUrl: 'https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=1000&auto=format&fit=crop',
       tags: ['anime', 'announcement'],
     },
   ];
@@ -100,23 +103,34 @@ export default function NewsPage() {
 
         {/* Featured Article */}
         {displayItems[0] && (
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
-            <div className="flex flex-col md:flex-row items-center">
-              <div className="flex-1 mb-6 md:mb-0">
-                <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="relative bg-gray-800 rounded-2xl overflow-hidden mb-12 group border border-gray-700">
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
+                {displayItems[0].imageUrl ? (
+                  <img
+                    src={displayItems[0].imageUrl}
+                    alt={displayItems[0].title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-5xl font-black">
+                    {displayItems[0].source?.slice(0, 2).toUpperCase() || 'AP'}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent md:hidden" />
+              </div>
+              <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                <span className="bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-medium w-fit mb-4">
                   {displayItems[0].tags?.[0] || 'Featured'}
                 </span>
-                <h2 className="text-3xl font-bold text-white mt-4 mb-4">
+                <h2 className="text-3xl font-bold text-white mb-4 group-hover:text-indigo-400 transition-colors">
                   {displayItems[0].title}
                 </h2>
-                <p className="text-white/80 mb-4">{displayItems[0].summary}</p>
-                <div className="flex items-center text-white/70 text-sm">
+                <p className="text-gray-400 mb-6 line-clamp-3">{displayItems[0].summary}</p>
+                <div className="flex items-center text-gray-500 text-sm">
                   <Calendar className="w-4 h-4 mr-2" />
                   {new Date(displayItems[0].publishedAt).toLocaleDateString()}
                 </div>
-              </div>
-              <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-white text-3xl font-black">
-                {displayItems[0].source?.slice(0, 2).toUpperCase() || 'AP'}
               </div>
             </div>
           </div>
@@ -127,29 +141,49 @@ export default function NewsPage() {
           {displayItems.map((item) => (
             <article
               key={item.id}
-              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-colors"
+              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-all hover:-translate-y-1 border border-gray-700"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-indigo-400 text-sm font-semibold">
+              <div className="h-48 relative overflow-hidden">
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-700 flex items-center justify-center text-white/20 text-3xl font-black">
+                    {item.source.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <div className="absolute top-4 left-4">
+                  <span className="bg-black/60 backdrop-blur-md text-white px-2 py-1 rounded text-xs font-bold border border-white/10">
                     {item.source}
                   </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <Calendar className="w-3 h-3 mr-1" />
+                    {new Date(item.publishedAt).toLocaleDateString()}
+                  </div>
                   {item.tags?.[0] && (
-                    <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs">
+                    <span className="bg-gray-700/50 text-indigo-300 px-2 py-1 rounded-full text-xs">
                       {item.tags[0]}
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-gray-400 mb-4">{item.summary}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-500">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {new Date(item.publishedAt).toLocaleDateString()}
-                  </div>
+                <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 hover:text-indigo-400 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-gray-400 mb-4 text-sm line-clamp-3">{item.summary}</p>
+                <div className="flex items-center justify-between text-sm pt-4 border-t border-gray-700">
                   <div className="flex items-center text-gray-500">
                     <Clock className="w-4 h-4 mr-1" />
                     {'3 min read'}
+                  </div>
+                  <div className="text-indigo-400 font-semibold text-xs flex items-center">
+                    READ MORE <ArrowRight className="w-3 h-3 ml-1" />
                   </div>
                 </div>
               </div>

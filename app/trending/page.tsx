@@ -12,6 +12,7 @@ const trendingAnime = [
     views: '2.5M',
     studio: 'A-1 Pictures',
     genre: 'Action, Fantasy',
+    image: 'https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=1000&auto=format&fit=crop',
   },
   {
     id: 2,
@@ -21,6 +22,7 @@ const trendingAnime = [
     views: '1.8M',
     studio: 'Madhouse',
     genre: 'Adventure, Fantasy',
+    image: 'https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=1000&auto=format&fit=crop',
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const trendingAnime = [
     views: '3.2M',
     studio: 'MAPPA',
     genre: 'Action, Supernatural',
+    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1000&auto=format&fit=crop',
   },
   {
     id: 4,
@@ -39,6 +42,7 @@ const trendingAnime = [
     views: '4.1M',
     studio: 'ufotable',
     genre: 'Action, Historical',
+    image: 'https://images.unsplash.com/photo-1614583225154-5feade07339d?q=80&w=1000&auto=format&fit=crop',
   },
   {
     id: 5,
@@ -48,6 +52,7 @@ const trendingAnime = [
     views: '2.1M',
     studio: 'MAPPA',
     genre: 'Action, Horror',
+    image: 'https://images.unsplash.com/photo-1607604276483-bdfdd0cb2ada?q=80&w=1000&auto=format&fit=crop',
   },
   {
     id: 6,
@@ -57,6 +62,7 @@ const trendingAnime = [
     views: '1.5M',
     studio: '8bit',
     genre: 'Sports, Drama',
+    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop',
   },
 ];
 
@@ -97,27 +103,36 @@ export default function TrendingPage() {
         </div>
 
         {/* Featured Trending */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="flex-1 mb-6 md:mb-0">
-              <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">#1 Trending</span>
-              <h2 className="text-3xl font-bold text-white mt-4 mb-2">Solo Leveling</h2>
-              <p className="text-white/80 mb-4">
+        <div className="relative overflow-hidden rounded-2xl mb-12 group border border-gray-700 bg-gray-800">
+          <div className="flex flex-col md:flex-row">
+            <div className="md:w-1/3 relative h-64 md:h-auto overflow-hidden">
+              <img
+                src={trendingAnime[0].image}
+                alt={trendingAnime[0].title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent md:hidden" />
+            </div>
+            <div className="md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+              <div>
+                <span className="bg-yellow-400 text-black px-4 py-1 rounded-full text-sm font-bold">#1 Trending</span>
+              </div>
+              <h2 className="text-4xl font-bold text-white mt-6 mb-4 group-hover:text-indigo-400 transition-colors">
+                {trendingAnime[0].title}
+              </h2>
+              <p className="text-gray-400 text-lg mb-6 max-w-xl">
                 Follow the journey of Sung Jin-Woo, the weakest hunter who becomes the strongest.
               </p>
-              <div className="flex items-center space-x-4">
-                <span className="flex items-center text-yellow-300">
-                  <Star className="w-5 h-5 mr-1" />
-                  9.2
-                </span>
-                <span className="flex items-center text-white/80">
-                  <Eye className="w-5 h-5 mr-1" />
-                  2.5M views
-                </span>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center text-yellow-400 font-bold text-lg">
+                  <Star className="w-6 h-6 mr-2 fill-current" />
+                  {trendingAnime[0].rating}
+                </div>
+                <div className="flex items-center text-gray-400 text-lg">
+                  <Eye className="w-6 h-6 mr-2" />
+                  {trendingAnime[0].views} views
+                </div>
               </div>
-            </div>
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-4xl font-black text-white">
-              SL
             </div>
           </div>
         </div>
@@ -127,19 +142,24 @@ export default function TrendingPage() {
           <h2 className="text-2xl font-bold text-white mb-6">Top Ranked</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {trendingAnime.map((anime, index) => (
-              <div key={anime.id} className="bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-transform">
-                <div className="h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center relative">
-                  <span className="absolute top-4 left-4 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+              <div key={anime.id} className="bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all border border-gray-700 group">
+                <div className="h-48 relative overflow-hidden">
+                  <img
+                    src={anime.image}
+                    alt={anime.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                  <span className="absolute top-4 left-4 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                     {index + 1}
                   </span>
-                  <span className="text-4xl font-black text-white/20">{anime.title.slice(0, 2).toUpperCase()}</span>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-white font-bold text-lg mb-2">{anime.title}</h3>
-                  <p className="text-gray-400 text-sm mb-3">{anime.genre}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-yellow-400 flex items-center">
-                      <Star className="w-4 h-4 mr-1" />
+                  <h3 className="text-white font-bold text-lg mb-2 group-hover:text-indigo-400 transition-colors">{anime.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{anime.genre}</p>
+                  <div className="flex items-center justify-between text-sm pt-4 border-t border-gray-700">
+                    <span className="text-yellow-400 font-bold flex items-center">
+                      <Star className="w-4 h-4 mr-1 fill-current" />
                       {anime.rating}
                     </span>
                     <span className="text-gray-400">{anime.episodes} episodes</span>
