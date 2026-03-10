@@ -22,10 +22,11 @@ interface NewsItem {
 
 // RSS Sources
 const RSS_SOURCES = [
-  { name: 'Crunchyroll News', url: 'https://feeds.feedburner.com/crunchyroll/animenews', category: 'News' },
-  { name: 'Anime News Network', url: 'https://www.animenewsnetwork.com/news/rss.xml', category: 'News' },
-  { name: 'MyAnimeList News', url: 'https://myanimelist.net/rss/news.xml', category: 'News' },
-  { name: 'Funimation Blog', url: 'https://blog.funimation.com/feed/', category: 'News' },
+  { name: 'Crunchyroll News', url: 'https://www.crunchyroll.com/news/rss', category: 'News' },
+  { name: 'Anime News Network', url: 'https://www.animenewsnetwork.com/all/rss.xml?ann-edition=w', category: 'News' },
+  { name: 'MyAnimeList News', url: 'https://myanimelist.net/rss/news.rss', category: 'News' },
+  { name: 'Otaku USA Magazine', url: 'https://otakuusamagazine.com/feed/', category: 'News' },
+  { name: 'Anime UK News', url: 'https://animeuknews.net/feed/', category: 'News' },
 ];
 
 export default {
@@ -47,7 +48,7 @@ export default {
 
     // Health check endpoint
     if (url.pathname === '/') {
-      return jsonResponse({ message: 'AnimePulse Worker Running', version: '1.0.0' });
+      return jsonResponse({ message: 'AnimePulse Worker Running', version: '1.1.0' });
     }
 
     // PROTECTED endpoints - require secret
@@ -81,7 +82,7 @@ async function runAutoPilot(env: Env) {
   };
 
   try {
-    // Fetch REAL RSS instead of sample news
+    // Fetch REAL RSS items
     const rssItems = await fetchAllRSS();
     results.newsFetched = rssItems.length;
 
@@ -120,7 +121,10 @@ async function runAutoPilot(env: Env) {
       }
     }
 
-    await env.ANIMEPULSE_KV.put('news', JSON.stringify(existingNews.slice(0, 50)));
+    // Explicitly save to KV
+    if (newItemsCount > 0) {
+      await env.ANIMEPULSE_KV.put('news', JSON.stringify(existingNews.slice(0, 50)));
+    }
     
     return { 
       success: true, 
@@ -152,7 +156,7 @@ async function fetchAllRSS(): Promise<Array<{title: string, description: string,
       const xml = await response.text();
       const items = parseRSSXML(xml, source.name);
       
-      for (const item of items.slice(0, 3)) {
+      for (const item of items) {
         allNews.push({
           title: item.title,
           description: item.description,
@@ -166,8 +170,9 @@ async function fetchAllRSS(): Promise<Array<{title: string, description: string,
     }
   }
   
-  // Sort by date (newest first) and return unique items
-  return allNews.slice(0, 10);
+  // Return unique items (by title)
+  const uniqueNews = Array.from(new Map(allNews.map(item => [item.title, item])).values());
+  return uniqueNews.slice(0, 15);
 }
 
 // Parse RSS XML with image extraction
@@ -182,8 +187,8 @@ function parseRSSXML(xml: string, sourceName: string) {
   const dateRegex = /<pubDate>([^<]*)<\/pubDate>/i;
   
   // Image patterns in RSS
-  const mediaThumbnailRegex = /<media:thumbnail[^>]+url="([^"]+)"/i;
-  const mediaContentRegex = /<media:content[^>]+url="([^"]+)"[^>]*>.*?<\/media:content>/is;
+  const mediaThumbnailRegex = /<(?:media:thumbnail|thumbnail)[^>]+url="([^"]+)"/i;
+  const mediaContentRegex = /<(?:media:content|content)[^>]+url="([^"]+)"/i;
   const imgSrcRegex = /<img[^>]+src="([^"]+)[^>]*>/i;
   const enclosureRegex = /<enclosure[^>]+url="([^"]+)"[^>]*type="image[^"]*"/i;
   
@@ -214,9 +219,9 @@ function parseRSSXML(xml: string, sourceName: string) {
       if (enclosureMatch) imageUrl = enclosureMatch[1];
     }
     
-    // Try img tag in description
+    // Try img tag in description or item content
     if (!imageUrl) {
-      const imgMatch = description.match(imgSrcRegex);
+      const imgMatch = item.match(imgSrcRegex) || description.match(imgSrcRegex);
       if (imgMatch) imageUrl = imgMatch[1];
     }
     
@@ -227,14 +232,20 @@ function parseRSSXML(xml: string, sourceName: string) {
         .replace(/<!\[CDATA\[/g, '')
         .replace(/\]\]>/g, '')
         .replace(/<[^>]*>/g, '')
-        .substring(0, 250) + '...';
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .trim();
+
+      const shortDesc = cleanDesc.substring(0, 250) + (cleanDesc.length > 250 ? '...' : '');
       
       items.push({
         title: cleanTitle,
         link,
-        description: cleanDesc,
+        description: shortDesc,
         pubDate: dateStr ? new Date(dateStr) : new Date(),
-        imageUrl,
+        imageUrl: imageUrl?.replace(/&amp;/g, '&'),
       });
     }
   }
@@ -243,8 +254,13 @@ function parseRSSXML(xml: string, sourceName: string) {
 }
 
 async function getStoredNews(env: Env): Promise<NewsItem[]> {
-  const stored = await env.ANIMEPULSE_KV.get('news');
-  return stored ? JSON.parse(stored) : [];
+  try {
+    const stored = await env.ANIMEPULSE_KV.get('news');
+    return stored ? JSON.parse(stored) : [];
+  } catch (e) {
+    console.error('Error getting stored news:', e);
+    return [];
+  }
 }
 
 async function generateArticle(
@@ -253,13 +269,15 @@ async function generateArticle(
 ) {
   const prompt = `Write an engaging anime news article about: ${item.title}\n\nDescription: ${item.description}\n\nSummary after ---SUMMARY---\nTags after ---TAGS--- (comma-separated)`;
 
+  const fallbackArticle = {
+    title: item.title,
+    content: `# ${item.title}\n\n${item.description}\n\n## Community Reaction\n\nThe anime community has been quick to react to this news. Fans on social media are expressing excitement and sharing their expectations. This update is certainly one of the highlights of the week in the industry.\n\n## Why It Matters\n\nDevelopments like this often signal new trends or major shifts in the anime landscape. Whether it's a new season announcement or a production update, it keeps the spirit of the medium alive and thriving.\n\nStay tuned to AnimePulse for more in-depth coverage and future updates on this story!\n\n*Content generated by AnimePulse Auto-Pilot Fallback System.*`,
+    summary: item.description,
+    tags: ['anime', 'news', 'update'],
+  };
+
   if (!env.GEMINI_API_KEY) {
-    return {
-      title: item.title,
-      content: `# ${item.title}\n\n${item.description}`,
-      summary: item.description,
-      tags: ['anime', 'news'],
-    };
+    return fallbackArticle;
   }
 
   try {
@@ -276,23 +294,25 @@ async function generateArticle(
     );
 
     const data = await response.json();
+
+    if (data.error) {
+       console.error('Gemini API Error:', data.error.message);
+       return fallbackArticle;
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const [content, rest] = text.split('---SUMMARY---');
     const [summary, tagsStr] = (rest || '').split('---TAGS---');
 
     return {
       title: item.title,
-      content: content?.trim() || `# ${item.title}`,
+      content: content?.trim() || `# ${item.title}\n\n${item.description}`,
       summary: summary?.trim() || item.description,
       tags: tagsStr?.split(',').map((t: string) => t.trim()).filter((t: string) => t) || ['anime', 'news'],
     };
-  } catch {
-    return {
-      title: item.title,
-      content: `# ${item.title}\n\n${item.description}`,
-      summary: item.description,
-      tags: ['anime', 'news'],
-    };
+  } catch (error) {
+    console.warn('Using fallback content for:', item.title);
+    return fallbackArticle;
   }
 }
 
