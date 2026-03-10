@@ -23,10 +23,30 @@ const features = [
 ];
 
 const trendingAnime = [
-  { title: 'Attack on Titan', rating: 9.8, status: 'Completed', image: 'AOT' },
-  { title: 'Jujutsu Kaisen', rating: 9.6, status: 'Ongoing', image: 'JJK' },
-  { title: 'Demon Slayer', rating: 9.5, status: 'Ongoing', image: 'DS' },
-  { title: 'One Piece', rating: 9.7, status: 'Ongoing', image: 'OP' },
+  {
+    title: 'Attack on Titan',
+    rating: 9.8,
+    status: 'Completed',
+    image: 'https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    title: 'Jujutsu Kaisen',
+    rating: 9.6,
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    title: 'Demon Slayer',
+    rating: 9.5,
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1614583225154-5feade07339d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    title: 'One Piece',
+    rating: 9.7,
+    status: 'Ongoing',
+    image: 'https://images.unsplash.com/photo-1607604276483-bdfdd0cb2ada?q=80&w=1000&auto=format&fit=crop'
+  },
 ];
 
 export default function Home() {
@@ -103,21 +123,32 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {trendingAnime.map((anime) => (
-              <div
+              <Link
+                href="/trending"
                 key={anime.title}
-                className="bg-gray-800 rounded-xl overflow-hidden group cursor-pointer"
+                className="bg-gray-800 rounded-xl overflow-hidden group cursor-pointer border border-gray-700 hover:border-indigo-500/50 transition-all hover:-translate-y-2"
               >
-                <div className="h-48 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                  <span className="text-4xl font-black text-white/20">{anime.image}</span>
+                <div className="h-48 relative overflow-hidden">
+                  <img
+                    src={anime.image}
+                    alt={anime.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
                 </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-white mb-2">{anime.title}</h3>
+                <div className="p-5">
+                  <h3 className="font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">{anime.title}</h3>
                   <div className="flex items-center justify-between">
-                    <span className="text-yellow-400">★ {anime.rating}</span>
-                    <span className="text-sm text-gray-400">{anime.status}</span>
+                    <span className="text-yellow-400 font-bold flex items-center">
+                      <Star className="w-4 h-4 mr-1 fill-current" />
+                      {anime.rating}
+                    </span>
+                    <span className="text-sm text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
+                      {anime.status}
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
