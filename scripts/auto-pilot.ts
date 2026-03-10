@@ -17,6 +17,10 @@
  *   - full: Run complete workflow (default)
  */
 
+import * as dotenv from 'dotenv';
+// Load environment variables immediately
+dotenv.config();
+
 import { fetchAnimeRSS, getSampleAnimeNews } from '../lib/rssParser';
 import { generateArticle, generateTrendingAnalysis } from '../lib/gemini';
 import { sendToTelegram, sendTrendingUpdate, testTelegramConnection } from '../lib/telegram';
@@ -36,6 +40,7 @@ interface NewsItem {
   summary: string;
   source: string;
   url: string;
+  imageUrl?: string;
   publishedAt: string;
   tags: string[];
   postedToTelegram: boolean;
@@ -135,6 +140,7 @@ async function processNews(): Promise<number> {
         summary: article.summary,
         source: item.source,
         url: item.link,
+        imageUrl: item.imageUrl,
         publishedAt: new Date().toISOString(),
         tags: article.tags,
         postedToTelegram: false,

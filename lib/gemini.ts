@@ -3,8 +3,8 @@
  * Generates anime articles using Google's Gemini AI
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const getGeminiApiKey = () => process.env.GEMINI_API_KEY || '';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 export interface GeneratedArticle {
   title: string;
@@ -20,7 +20,8 @@ export interface GeneratedArticle {
 export async function generateArticle(
   newsItem: { title: string; description: string }
 ): Promise<GeneratedArticle> {
-  if (!GEMINI_API_KEY) {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) {
     console.warn('⚠️ No Gemini API key found, using fallback content');
     return generateFallbackArticle(newsItem);
   }
@@ -44,7 +45,7 @@ And 3-5 relevant tags at the end, separated by "---TAGS---" (comma-separated)
 `;
 
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +135,8 @@ Stay tuned to AnimePulse for more updates as they become available. We'll keep y
  * Generate trending analysis
  */
 export async function generateTrendingAnalysis(animeList: string[]): Promise<string> {
-  if (!GEMINI_API_KEY) {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) {
     return `Current trending anime include ${animeList.slice(0, 3).join(', ')}, and more. These shows are capturing fans' attention with their compelling stories and stunning animation.`;
   }
 
@@ -144,7 +146,7 @@ ${animeList.join(', ')}
 Write a short paragraph (3-4 sentences) explaining what makes these anime popular right now. Be engaging and informative.`;
 
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -176,10 +178,11 @@ export async function generateQuickReview(
   rating: number,
   genre: string
 ): Promise<string> {
+  const apiKey = getGeminiApiKey();
   const prompt = `Write a short 2-3 sentence review for "${animeTitle}" (${genre}) rated ${rating}/10. Be concise and engaging.`;
   
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

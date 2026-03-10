@@ -26,6 +26,9 @@ const RSS_SOURCES = [
   { name: 'Anime News Network', url: 'https://www.animenewsnetwork.com/news/rss.xml', category: 'News' },
   { name: 'MyAnimeList News', url: 'https://myanimelist.net/rss/news.xml', category: 'News' },
   { name: 'Funimation Blog', url: 'https://blog.funimation.com/feed/', category: 'News' },
+  { name: 'Anime Planet', url: 'https://www.anime-planet.com/rss/news.xml', category: 'News' },
+  { name: 'Otaku USA Magazine', url: 'https://otakuusamagazine.com/feed/', category: 'News' },
+  { name: 'Anime UK News', url: 'https://animeuknews.net/feed/', category: 'News' },
 ];
 
 export default {
@@ -251,15 +254,10 @@ async function generateArticle(
   item: { title: string; description: string },
   env: Env
 ) {
-  const prompt = `Write an engaging anime news article about: ${item.title}\n\nDescription: ${item.description}\n\nSummary after ---SUMMARY---\nTags after ---TAGS--- (comma-separated)`;
+  const prompt = `You are an expert anime journalist. Write an engaging anime news article about: ${item.title}\n\nDescription: ${item.description}\n\nSummary after ---SUMMARY---\nTags after ---TAGS--- (comma-separated)`;
 
   if (!env.GEMINI_API_KEY) {
-    return {
-      title: item.title,
-      content: `# ${item.title}\n\n${item.description}`,
-      summary: item.description,
-      tags: ['anime', 'news'],
-    };
+    return fallbackArticle(item);
   }
 
   try {
@@ -275,7 +273,18 @@ async function generateArticle(
       }
     );
 
+    if (!response.ok) {
+      console.error(`Gemini API error: ${response.status}`);
+      return fallbackArticle(item);
+    }
+
     const data = await response.json();
+
+    if (data.error) {
+      console.error(`Gemini API error detail: ${data.error.message}`);
+      return fallbackArticle(item);
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const [content, rest] = text.split('---SUMMARY---');
     const [summary, tagsStr] = (rest || '').split('---TAGS---');
@@ -286,14 +295,19 @@ async function generateArticle(
       summary: summary?.trim() || item.description,
       tags: tagsStr?.split(',').map((t: string) => t.trim()).filter((t: string) => t) || ['anime', 'news'],
     };
-  } catch {
-    return {
-      title: item.title,
-      content: `# ${item.title}\n\n${item.description}`,
-      summary: item.description,
-      tags: ['anime', 'news'],
-    };
+  } catch (error) {
+    console.error(`Error generating article: ${error}`);
+    return fallbackArticle(item);
   }
+}
+
+function fallbackArticle(item: { title: string; description: string }) {
+  return {
+    title: item.title,
+    content: `# ${item.title}\n\n${item.description}\n\n## Community Reaction\n\nFans are buzzed about this latest development! Stay tuned for more updates.`,
+    summary: item.description,
+    tags: ['anime', 'news'],
+  };
 }
 
 async function postToTelegram(newsItem: NewsItem, env: Env): Promise<boolean> {

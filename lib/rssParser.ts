@@ -16,17 +16,17 @@ export interface AnimeNewsItem {
 const RSS_SOURCES = [
   {
     name: 'Crunchyroll News',
-    url: 'https://www.crunchyroll.com/newsfeed',
+    url: 'https://feeds.feedburner.com/crunchyroll/animenews',
     category: 'News',
   },
   {
     name: 'MyAnimeList News',
-    url: 'https://myanimelist.net/rss/news.rss',
+    url: 'https://myanimelist.net/rss/news.xml',
     category: 'News',
   },
   {
     name: 'Anime News Network',
-    url: 'https://www.animenewsnetwork.com/all/rss.xml',
+    url: 'https://www.animenewsnetwork.com/news/rss.xml',
     category: 'News',
   },
   {
@@ -80,6 +80,12 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
   const descRegex = /<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\])?<\/description>/i;
   const dateRegex = /<pubDate>([^<]*)<\/pubDate>/i;
   
+  // Image patterns in RSS
+  const mediaThumbnailRegex = /<media:thumbnail[^>]+url="([^"]+)"/i;
+  const mediaContentRegex = /<media:content[^>]+url="([^"]+)"[^>]*>[\s\S]*?<\/media:content>/i;
+  const imgSrcRegex = /<img[^>]+src="([^"]+)[^>]*>/i;
+  const enclosureRegex = /<enclosure[^>]+url="([^"]+)"[^>]*type="image[^"]*"/i;
+
   const matches = xml.match(itemRegex) || [];
   
   for (const item of matches.slice(0, 5)) { // Get top 5 items
@@ -88,6 +94,31 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
     const description = item.match(descRegex)?.[1]?.trim() || '';
     const pubDate = item.match(dateRegex)?.[1]?.trim() || '';
     
+    // Extract image from various RSS formats
+    let imageUrl: string | undefined;
+
+    // Try media:thumbnail first
+    const mediaMatch = item.match(mediaThumbnailRegex);
+    if (mediaMatch) imageUrl = mediaMatch[1];
+
+    // Try media:content
+    if (!imageUrl) {
+      const contentMatch = item.match(mediaContentRegex);
+      if (contentMatch) imageUrl = contentMatch[1];
+    }
+
+    // Try enclosure
+    if (!imageUrl) {
+      const enclosureMatch = item.match(enclosureRegex);
+      if (enclosureMatch) imageUrl = enclosureMatch[1];
+    }
+
+    // Try img tag in description
+    if (!imageUrl) {
+      const imgMatch = description.match(imgSrcRegex);
+      if (imgMatch) imageUrl = imgMatch[1];
+    }
+
     if (title && link) {
       // Clean up CDATA and HTML entities
       const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '');
@@ -103,6 +134,7 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
         description: cleanDesc,
         pubDate: pubDate ? new Date(pubDate) : new Date(),
         source: sourceName,
+        imageUrl,
         categories: ['anime', 'news'],
       });
     }
