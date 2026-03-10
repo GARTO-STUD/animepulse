@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
+import { Calendar, Clock, Newspaper } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface NewsItem {
@@ -9,6 +8,7 @@ interface NewsItem {
   title: string;
   summary: string;
   content: string;
+  imageUrl?: string;
   publishedAt: string;
   source: string;
   tags: string[];
@@ -100,23 +100,35 @@ export default function NewsPage() {
 
         {/* Featured Article */}
         {displayItems[0] && (
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
-            <div className="flex flex-col md:flex-row items-center">
-              <div className="flex-1 mb-6 md:mb-0">
-                <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className="bg-gray-800 rounded-2xl overflow-hidden mb-12 border border-gray-700">
+            <div className="flex flex-col lg:flex-row">
+              <div className="lg:w-1/2 relative h-64 lg:h-auto min-h-[300px]">
+                <img
+                  src={displayItems[0].imageUrl || 'https://images.unsplash.com/photo-1578632292335-df3abbb0d586?q=80&w=1000&auto=format&fit=crop'}
+                  alt={displayItems[0].title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-transparent lg:hidden"></div>
+              </div>
+              <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                <span className="bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-medium w-fit mb-6">
                   {displayItems[0].tags?.[0] || 'Featured'}
                 </span>
-                <h2 className="text-3xl font-bold text-white mt-4 mb-4">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
                   {displayItems[0].title}
                 </h2>
-                <p className="text-white/80 mb-4">{displayItems[0].summary}</p>
-                <div className="flex items-center text-white/70 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {new Date(displayItems[0].publishedAt).toLocaleDateString()}
+                <p className="text-gray-400 text-lg mb-8 line-clamp-3">
+                  {displayItems[0].summary}
+                </p>
+                <div className="flex items-center text-gray-500 text-sm">
+                  <div className="flex items-center mr-6">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    {new Date(displayItems[0].publishedAt).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-indigo-400 font-semibold mr-2">{displayItems[0].source}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-white text-3xl font-black">
-                {displayItems[0].source?.slice(0, 2).toUpperCase() || 'AP'}
               </div>
             </div>
           </div>
@@ -124,31 +136,40 @@ export default function NewsPage() {
 
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayItems.map((item) => (
+          {displayItems.slice(1).map((item) => (
             <article
               key={item.id}
-              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-colors"
+              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-all hover:-translate-y-1 border border-gray-700 shadow-xl"
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-indigo-400 text-sm font-semibold">
+              <div className="h-48 relative">
+                <img
+                  src={item.imageUrl || 'https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=1000&auto=format&fit=crop'}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-4 left-4">
+                   <span className="bg-black/60 backdrop-blur-md text-white px-2 py-1 rounded text-xs font-medium">
                     {item.source}
                   </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-3">
                   {item.tags?.[0] && (
-                    <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs">
+                    <span className="text-indigo-400 text-xs font-bold uppercase tracking-wider">
                       {item.tags[0]}
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-gray-400 mb-4">{item.summary}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-gray-500">
-                    <Calendar className="w-4 h-4 mr-1" />
+                <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 min-h-[3.5rem]">{item.title}</h3>
+                <p className="text-gray-400 mb-6 text-sm line-clamp-3 h-[4.5rem]">{item.summary}</p>
+                <div className="flex items-center justify-between text-xs text-gray-500 border-t border-gray-700 pt-4">
+                  <div className="flex items-center">
+                    <Calendar className="w-3.5 h-3.5 mr-1" />
                     {new Date(item.publishedAt).toLocaleDateString()}
                   </div>
-                  <div className="flex items-center text-gray-500">
-                    <Clock className="w-4 h-4 mr-1" />
+                  <div className="flex items-center">
+                    <Clock className="w-3.5 h-3.5 mr-1" />
                     {'3 min read'}
                   </div>
                 </div>

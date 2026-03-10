@@ -36,6 +36,7 @@ interface NewsItem {
   summary: string;
   source: string;
   url: string;
+  imageUrl?: string;
   publishedAt: string;
   tags: string[];
   postedToTelegram: boolean;
@@ -135,6 +136,7 @@ async function processNews(): Promise<number> {
         summary: article.summary,
         source: item.source,
         url: item.link,
+        imageUrl: item.imageUrl,
         publishedAt: new Date().toISOString(),
         tags: article.tags,
         postedToTelegram: false,
