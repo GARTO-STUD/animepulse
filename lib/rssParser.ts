@@ -16,7 +16,7 @@ export interface AnimeNewsItem {
 const RSS_SOURCES = [
   {
     name: 'Crunchyroll News',
-    url: 'https://www.crunchyroll.com/newsfeed',
+    url: 'https://feeds.feedburner.com/crunchyroll/animenews',
     category: 'News',
   },
   {
@@ -26,17 +26,7 @@ const RSS_SOURCES = [
   },
   {
     name: 'Anime News Network',
-    url: 'https://www.animenewsnetwork.com/all/rss.xml',
-    category: 'News',
-  },
-  {
-    name: 'Funimation Blog',
-    url: 'https://www.funimation.com/feed/',
-    category: 'News',
-  },
-  {
-    name: 'Anime Planet',
-    url: 'https://www.anime-planet.com/rss/news.xml',
+    url: 'https://www.animenewsnetwork.com/news/rss.xml',
     category: 'News',
   },
   {
@@ -52,11 +42,6 @@ const RSS_SOURCES = [
   {
     name: 'Manga Updates',
     url: 'https://www.mangaupdates.com/rss/news.xml',
-    category: 'News',
-  },
-  {
-    name: 'Otaku Mode',
-    url: 'https://otakumode.com/feed',
     category: 'News',
   },
   {
@@ -90,12 +75,13 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
     
     if (title && link) {
       // Clean up CDATA and HTML entities
-      const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '');
-      const cleanDesc = description
+      const cleanTitle = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim();
+      const rawDesc = description
         .replace(/<!\[CDATA\[/g, '')
         .replace(/\]\]>/g, '')
         .replace(/<[^>]*>/g, '') // Strip HTML tags
-        .substring(0, 200) + '...';
+        .trim();
+      const cleanDesc = rawDesc.length > 200 ? rawDesc.substring(0, 197) + '...' : rawDesc;
       
       items.push({
         title: cleanTitle,

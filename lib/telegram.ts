@@ -3,8 +3,8 @@
  * Posts updates to Telegram channel
  */
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8619875811:AAEOOLGCadWLdXcOjts7wIcBRVsV7lZJrV8';
-const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '-1003730635887';
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const TELEGRAM_CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '';
 
 export interface TelegramPost {
   title: string;
