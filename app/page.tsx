@@ -1,150 +1,149 @@
-import Link from 'next/link';
-import { TrendingUp, Newspaper, Star, Play } from 'lucide-react';
+import { Users, Star, TrendingUp, Heart } from 'lucide-react';
 
-const features = [
+const stats = [
+  { icon: Users, value: '100K+', label: 'Monthly Visitors' },
+  { icon: Star, value: '500+', label: 'Anime Reviews' },
+  { icon: TrendingUp, value: '1K+', label: 'News Articles' },
+  { icon: Heart, value: '50K+', label: 'Happy Fans' },
+];
+
+const team = [
   {
-    icon: Newspaper,
-    title: 'Latest News',
-    description: 'Stay updated with breaking anime news and announcements.',
-    href: '/news',
+    name: 'Founder',
+    role: 'CEO & Editor-in-Chief',
+    bio: 'Passionate anime fan with over 20 years of experience in the industry.',
   },
   {
-    icon: TrendingUp,
-    title: 'Trending Shows',
-    description: 'Discover what\'s hot in the anime community right now.',
-    href: '/trending',
+    name: 'Content Lead',
+    role: 'Head of Content',
+    bio: 'Dedicated to bringing you the latest and most accurate anime news.',
   },
   {
-    icon: Star,
-    title: 'Reviews',
-    description: 'In-depth reviews and ratings from our expert team.',
-    href: '/reviews',
+    name: 'Tech Lead',
+    role: 'Lead Developer',
+    bio: 'Building the best platform for anime enthusiasts worldwide.',
   },
 ];
 
-const trendingAnime = [
-  { title: 'Attack on Titan', rating: 9.8, status: 'Completed', image: 'AOT' },
-  { title: 'Jujutsu Kaisen', rating: 9.6, status: 'Ongoing', image: 'JJK' },
-  { title: 'Demon Slayer', rating: 9.5, status: 'Ongoing', image: 'DS' },
-  { title: 'One Piece', rating: 9.7, status: 'Ongoing', image: 'OP' },
+const values = [
+  {
+    title: 'Passion',
+    description: 'We are driven by our love for anime and the community around it.',
+  },
+  {
+    title: 'Quality',
+    description: 'We strive to provide accurate, well-researched, and engaging content.',
+  },
+  {
+    title: 'Community',
+    description: 'We believe in the power of bringing anime fans together.',
+  },
+  {
+    title: 'Innovation',
+    description: 'We constantly evolve to provide the best user experience.',
+  },
 ];
 
-export default function Home() {
+export const metadata = {
+  title: 'About Us | AnimePulse',
+  description: 'Learn about AnimePulse and our mission to bring you the best anime content.',
+};
+
+export default function AboutUs() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-900">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-gray-900 via-gray-900 to-black py-20 lg:py-32">
+      <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6">
-            <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Your Anime Journey
-            </span>
-            <br />
-            <span className="text-white">Starts Here</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            About <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">AnimePulse</span>
           </h1>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Discover the latest anime news, trending shows, expert reviews, and top rankings 
-            all in one place.
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            Your ultimate destination for anime news, reviews, and community. 
+            We&apos;re passionate fans dedicated to bringing you the best content from the world of anime.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/trending"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Explore Trending
-            </Link>
-            <Link
-              href="/news"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700 transition-all"
-            >
-              <Newspaper className="w-5 h-5 mr-2" />
-              Latest News
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-black">
+      {/* Stats Section */}
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature) => {
-              const Icon = feature.icon;
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
               return (
-                <Link
-                  key={feature.title}
-                  href={feature.href}
-                  className="group p-8 bg-gray-900 rounded-2xl border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105"
-                >
-                  <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-500/30 transition-colors">
-                    <Icon className="w-6 h-6 text-indigo-400" />
+                <div key={index} className="text-center">
+                  <div className="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon className="w-8 h-8 text-indigo-400" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                  <p className="text-gray-400">{feature.description}</p>
-                </Link>
+                  <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+                  <div className="text-gray-400">{stat.label}</div>
+                </div>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* Trending Section */}
+      {/* Mission Section */}
       <section className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white">Trending Now</h2>
-            <Link
-              href="/trending"
-              className="text-indigo-400 hover:text-indigo-300 font-medium"
-            >
-              View All →
-            </Link>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-white mb-4">Our Mission</h2>
+            <p className="text-gray-400 max-w-3xl mx-auto text-lg">
+              To create the most comprehensive and engaging platform for anime fans worldwide, 
+              providing accurate news, thoughtful reviews, and a vibrant community space.
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {trendingAnime.map((anime) => (
-              <div
-                key={anime.title}
-                className="bg-gray-800 rounded-xl overflow-hidden group cursor-pointer"
-              >
-                <div className="h-48 bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                  <span className="text-4xl font-black text-white/20">{anime.image}</span>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-white mb-2">{anime.title}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-yellow-400">★ {anime.rating}</span>
-                    <span className="text-sm text-gray-400">{anime.status}</span>
-                  </div>
-                </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <div key={index} className="bg-gray-800 p-6 rounded-xl text-center">
+                <h3 className="text-xl font-bold text-white mb-3">{value.title}</h3>
+                <p className="text-gray-400">{value.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Team Section */}
       <section className="py-20 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-white mb-4">Meet Our Team</h2>
+            <p className="text-gray-400">The passionate people behind AnimePulse</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {team.map((member, index) => (
+              <div key={index} className="bg-gray-800 p-8 rounded-xl text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">{member.name[0]}</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{member.name}</h3>
+                <p className="text-indigo-400 mb-4">{member.role}</p>
+                <p className="text-gray-400">{member.bio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-b from-black to-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Stay in the Loop
-          </h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Join Our Community</h2>
           <p className="text-gray-400 mb-8">
-            Subscribe to our newsletter for weekly anime updates and exclusive content.
+            Be part of the growing AnimePulse family. Get the latest updates, participate in discussions, 
+            and connect with fellow anime fans.
           </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-6 py-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
-            />
-            <button
-              type="submit"
-              className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
-            >
-              Subscribe
-            </button>
-          </form>
+          <a
+            href="/"
+            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
+          >
+            Explore AnimePulse
+          </a>
         </div>
       </section>
     </div>
