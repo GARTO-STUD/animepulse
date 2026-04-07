@@ -9,7 +9,7 @@
  * 4. Update the website content
  * 
  * Usage:
- *   ts-node scripts/auto-pilot.ts [task]
+ *   ts-node auto-pilot.ts [task]
  * 
  * Tasks:
  *   - news: Fetch and process news
@@ -17,9 +17,9 @@
  *   - full: Run complete workflow (default)
  */
 
-import { fetchAnimeRSS, getSampleAnimeNews } from '../lib/rssParser';
-import { generateArticle, generateTrendingAnalysis } from '../lib/gemini';
-import { sendToTelegram, sendTrendingUpdate, testTelegramConnection } from '../lib/telegram';
+import { fetchAnimeRSS, getSampleAnimeNews } from './lib/rssParser';
+import { generateArticle, generateTrendingAnalysis } from './lib/gemini';
+import { sendToTelegram, sendTrendingUpdate, testTelegramConnection } from './lib/telegram';
 import * as fs from 'fs';
 import * as path from 'path';
 
