@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Calendar, Clock, Newspaper } from 'lucide-react';
 
 interface NewsItem {
   id: string;
