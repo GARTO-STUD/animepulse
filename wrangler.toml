@@ -17,11 +17,12 @@ preview_id = "05eaa7b73ed34611b6c673a961220461"
 crons = ["0 */6 * * *"]
 
 # متغيرات البيئة للـ Production
-[env.production.vars]
-CRON_SECRET = "dtSYLmSOCjYtgcSSz0qe7AzLBWYYcHz3rNvqNXtpJw0="
-GEMINI_API_KEY = "AIzaSyB0zLp7XtZt1YXbkcMPbqDA4hLzD17sL8s"
-TELEGRAM_BOT_TOKEN = "8619875811:AAEOOLGCadWLdXcOjts7wIcBRVsV7lZJrV8"
-TELEGRAM_CHANNEL_ID = "-1003730635887"
+# ⚠️ لا تضع مفاتيح API هنا - استخدم wrangler secret بدلاً من ذلك
+# wrangler secret put CRON_SECRET
+# wrangler secret put GEMINI_API_KEY
+# wrangler secret put TELEGRAM_BOT_TOKEN
+# wrangler secret put TELEGRAM_CHANNEL_ID
+
 
 # إعدادات الـ Worker
 [placement]

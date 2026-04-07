@@ -149,13 +149,13 @@ for (const item of newsItems.slice(0, 5)) { // أول 5 أخبار
 ## 📋 متطلبات الـ API
 
 ### Gemini API:
-- ✅ مضاف بالفعل
-- Key: `AIzaSyB0zLp7XtZt1YXbkcMPbqDA4hLzD17sL8s`
+- احصل على مفتاحك من: https://aistudio.google.com
+- ضعه في `.env.local`: `GEMINI_API_KEY=your_key`
 
 ### Telegram Bot:
-- ✅ مضاف بالفعل
-- Token: `8619875811:AAEOOLGCadWLdXcOjts7wIcBRVsV7lZJrV8`
-- Channel: `-1003730635887`
+- أنشئ بوت عبر @BotFather
+- ضع التوكن في `.env.local`: `TELEGRAM_BOT_TOKEN=your_token`
+- ضع معرف القناة: `TELEGRAM_CHANNEL_ID=your_channel_id`
 
 ## ⚠️ ملاحظات مهمة
 
