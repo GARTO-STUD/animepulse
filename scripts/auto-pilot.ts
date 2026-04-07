@@ -175,21 +175,37 @@ async function processNews(): Promise<number> {
 }
 
 /**
+ * Fetch real trending anime from Jikan API (MyAnimeList)
+ */
+async function fetchTrendingAnime(): Promise<string[]> {
+  try {
+    const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
+    if (!response.ok) throw new Error('Jikan API error');
+    const data = await response.json();
+    return (data.data || []).map((anime: { title: string }) => anime.title).slice(0, 8);
+  } catch (e) {
+    log('⚠️ Jikan API failed, using fallback trending list');
+    return [
+      'Solo Leveling',
+      'Jujutsu Kaisen',
+      'Demon Slayer',
+      'Attack on Titan',
+      'One Piece',
+      'Chainsaw Man',
+      'Blue Lock',
+      'Frieren: Beyond Journey\'s End',
+    ];
+  }
+}
+
+/**
  * Task: Update Trending
  */
 async function updateTrending(): Promise<void> {
   log('📈 Starting trending update task...');
-  
-  const trendingAnime = [
-    'Solo Leveling',
-    'Jujutsu Kaisen',
-    'Demon Slayer',
-    'Attack on Titan',
-    'One Piece',
-    'Chainsaw Man',
-    'Blue Lock',
-    'Frieren: Beyond Journey\'s End',
-  ];
+
+  const trendingAnime = await fetchTrendingAnime();
+  log(`✅ Fetched ${trendingAnime.length} trending anime`);
   
   // Generate trending analysis
   const analysis = await generateTrendingAnalysis(trendingAnime);
