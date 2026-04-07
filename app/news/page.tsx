@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
+import { Calendar, Newspaper } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface NewsItem {
@@ -12,6 +11,8 @@ interface NewsItem {
   publishedAt: string;
   source: string;
   tags: string[];
+  imageUrl?: string;
+  url?: string;
 }
 
 const WORKER_URL = 'https://animepulse.asac-spy10.workers.dev';
@@ -100,23 +101,49 @@ export default function NewsPage() {
 
         {/* Featured Article */}
         {displayItems[0] && (
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
-            <div className="flex flex-col md:flex-row items-center">
-              <div className="flex-1 mb-6 md:mb-0">
-                <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {displayItems[0].tags?.[0] || 'Featured'}
-                </span>
-                <h2 className="text-3xl font-bold text-white mt-4 mb-4">
-                  {displayItems[0].title}
-                </h2>
-                <p className="text-white/80 mb-4">{displayItems[0].summary}</p>
-                <div className="flex items-center text-white/70 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  {new Date(displayItems[0].publishedAt).toLocaleDateString()}
+          <div className="bg-gray-800 rounded-2xl overflow-hidden mb-12 border border-gray-700">
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/2 h-64 md:h-auto relative">
+                {displayItems[0].imageUrl ? (
+                  <img
+                    src={displayItems[0].imageUrl}
+                    alt={displayItems[0].title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center">
+                    <Newspaper className="w-20 h-20 text-white/20" />
+                  </div>
+                )}
+                <div className="absolute top-4 left-4">
+                  <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                    {displayItems[0].tags?.[0] || 'Featured'}
+                  </span>
                 </div>
               </div>
-              <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center text-white text-3xl font-black">
-                {displayItems[0].source?.slice(0, 2).toUpperCase() || 'AP'}
+              <div className="md:w-1/2 p-8 flex flex-col justify-center">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  {displayItems[0].title}
+                </h2>
+                <p className="text-gray-300 mb-6 line-clamp-3">{displayItems[0].summary}</p>
+                <div className="flex items-center justify-between mt-auto">
+                  <div className="flex items-center text-gray-400 text-sm">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    {new Date(displayItems[0].publishedAt).toLocaleDateString()}
+                    <span className="mx-2">•</span>
+                    <span className="text-indigo-400 font-semibold">{displayItems[0].source}</span>
+                  </div>
+                  {displayItems[0].url && (
+                    <a
+                      href={displayItems[0].url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                    >
+                      Read Full Story →
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -127,8 +154,21 @@ export default function NewsPage() {
           {displayItems.map((item) => (
             <article
               key={item.id}
-              className="bg-gray-800 rounded-xl overflow-hidden hover:bg-gray-750 transition-colors"
+              className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-indigo-500/50 transition-all group"
             >
+              <div className="h-48 relative overflow-hidden">
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                    <Newspaper className="w-12 h-12 text-gray-600" />
+                  </div>
+                )}
+              </div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-indigo-400 text-sm font-semibold">
@@ -140,17 +180,25 @@ export default function NewsPage() {
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-gray-400 mb-4">{item.summary}</p>
-                <div className="flex items-center justify-between text-sm">
+                <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-indigo-400 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-gray-400 mb-4 line-clamp-2 text-sm">{item.summary}</p>
+                <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-gray-700">
                   <div className="flex items-center text-gray-500">
                     <Calendar className="w-4 h-4 mr-1" />
                     {new Date(item.publishedAt).toLocaleDateString()}
                   </div>
-                  <div className="flex items-center text-gray-500">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {'3 min read'}
-                  </div>
+                  {item.url && (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-400 hover:text-indigo-300 font-medium"
+                    >
+                      Source →
+                    </a>
+                  )}
                 </div>
               </div>
             </article>

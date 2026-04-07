@@ -64,6 +64,12 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
   const linkRegex = /<link>([^<]*)<\/link>/i;
   const descRegex = /<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\])?<\/description>/i;
   const dateRegex = /<pubDate>([^<]*)<\/pubDate>/i;
+
+  // Image patterns in RSS
+  const mediaThumbnailRegex = /<media:thumbnail[^>]+url="([^"]+)"/i;
+  const mediaContentRegex = /<media:content[^>]+url="([^"]+)"[^>]*>[\s\S]*?<\/media:content>/i;
+  const imgSrcRegex = /<img[^>]+src="([^"]+)[^>]*>/i;
+  const enclosureRegex = /<enclosure[^>]+url="([^"]+)"[^>]*type="image[^"]*"/i;
   
   const matches = xml.match(itemRegex) || [];
   
@@ -71,7 +77,32 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
     const title = item.match(titleRegex)?.[1]?.trim() || '';
     const link = item.match(linkRegex)?.[1]?.trim() || '';
     const description = item.match(descRegex)?.[1]?.trim() || '';
-    const pubDate = item.match(dateRegex)?.[1]?.trim() || '';
+    const pubDateStr = item.match(dateRegex)?.[1]?.trim() || '';
+
+    // Extract image from various RSS formats
+    let imageUrl: string | undefined;
+
+    // Try media:thumbnail first
+    const mediaMatch = item.match(mediaThumbnailRegex);
+    if (mediaMatch) imageUrl = mediaMatch[1];
+
+    // Try media:content
+    if (!imageUrl) {
+      const contentMatch = item.match(mediaContentRegex);
+      if (contentMatch) imageUrl = contentMatch[1];
+    }
+
+    // Try enclosure
+    if (!imageUrl) {
+      const enclosureMatch = item.match(enclosureRegex);
+      if (enclosureMatch) imageUrl = enclosureMatch[1];
+    }
+
+    // Try img tag in description
+    if (!imageUrl) {
+      const imgMatch = description.match(imgSrcRegex);
+      if (imgMatch) imageUrl = imgMatch[1];
+    }
     
     if (title && link) {
       // Clean up CDATA and HTML entities
@@ -87,8 +118,9 @@ function parseRSSXML(xml: string, sourceName: string): AnimeNewsItem[] {
         title: cleanTitle,
         link,
         description: cleanDesc,
-        pubDate: pubDate ? new Date(pubDate) : new Date(),
+        pubDate: pubDateStr ? new Date(pubDateStr) : new Date(),
         source: sourceName,
+        imageUrl,
         categories: ['anime', 'news'],
       });
     }

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { TrendingUp, Star, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, Star, Calendar, RefreshCw } from 'lucide-react';
 
-const trendingAnime = [
+const WORKER_URL = 'https://animepulse.asac-spy10.workers.dev';
+
+const fallbackTrending = [
   {
     id: 1,
     title: 'Solo Leveling',
@@ -62,8 +64,46 @@ const trendingAnime = [
 
 const categories = ['All', 'Action', 'Adventure', 'Fantasy', 'Slice of Life', 'Sports'];
 
+interface TrendingData {
+  anime: string[];
+  updatedAt: string;
+}
+
 export default function TrendingPage() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [trendingData, setTrendingData] = useState<TrendingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchTrending() {
+      try {
+        const response = await fetch(`${WORKER_URL}/trending`);
+        if (!response.ok) throw new Error('Failed to fetch trending data');
+        const data = await response.json();
+        setTrendingData(data);
+      } catch (err) {
+        setError('Unable to load real-time trending data');
+        console.error('Trending fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTrending();
+  }, []);
+
+  const displayList = trendingData?.anime || fallbackTrending.map(a => a.title);
+  const updatedAt = trendingData?.updatedAt ? new Date(trendingData.updatedAt).toLocaleDateString() : 'Today';
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 py-12 flex flex-col items-center justify-center">
+        <RefreshCw className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
+        <p className="text-gray-400">Fetching latest trending anime...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 py-12">
@@ -97,53 +137,66 @@ export default function TrendingPage() {
         </div>
 
         {/* Featured Trending */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12">
-          <div className="flex flex-col md:flex-row items-center">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-12 relative overflow-hidden">
+          <div className="flex flex-col md:flex-row items-center relative z-10">
             <div className="flex-1 mb-6 md:mb-0">
-              <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">#1 Trending</span>
-              <h2 className="text-3xl font-bold text-white mt-4 mb-2">Solo Leveling</h2>
-              <p className="text-white/80 mb-4">
-                Follow the journey of Sung Jin-Woo, the weakest hunter who becomes the strongest.
+              <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">#1 Trending Now</span>
+              <h2 className="text-4xl font-bold text-white mt-4 mb-2">{displayList[0]}</h2>
+              <p className="text-white/80 mb-6 max-w-lg">
+                Currently dominating the charts with record-breaking viewership and social engagement.
               </p>
-              <div className="flex items-center space-x-4">
-                <span className="flex items-center text-yellow-300">
-                  <Star className="w-5 h-5 mr-1" />
-                  9.2
-                </span>
-                <span className="flex items-center text-white/80">
-                  <Eye className="w-5 h-5 mr-1" />
-                  2.5M views
-                </span>
+              <div className="flex items-center space-x-6">
+                <div className="flex flex-col">
+                  <span className="text-white/60 text-xs uppercase font-bold tracking-wider">Update Date</span>
+                  <span className="text-white font-medium flex items-center">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    {updatedAt}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white/60 text-xs uppercase font-bold tracking-wider">Status</span>
+                  <span className="text-yellow-300 font-medium flex items-center">
+                    <Star className="w-4 h-4 mr-2" />
+                    Top Airing
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-4xl font-black text-white">
-              SL
+            <div className="w-32 h-32 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-5xl font-black text-white shadow-2xl">
+              {displayList[0]?.slice(0, 2).toUpperCase()}
             </div>
           </div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
         </div>
 
         {/* Trending Grid */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Top Ranked</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trendingAnime.map((anime, index) => (
-              <div key={anime.id} className="bg-gray-800 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-transform">
-                <div className="h-48 bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center relative">
-                  <span className="absolute top-4 left-4 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Top 8 Trending Series</h2>
+            {error && <span className="text-yellow-500 text-sm">{error}</span>}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayList.map((title: string, index: number) => (
+              <div key={index} className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-indigo-500/50 transition-all group">
+                <div className="h-40 bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center relative">
+                  <span className="absolute top-3 left-3 w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold shadow-lg">
                     {index + 1}
                   </span>
-                  <span className="text-4xl font-black text-white/20">{anime.title.slice(0, 2).toUpperCase()}</span>
+                  <span className="text-3xl font-black text-white/10 group-hover:text-white/20 transition-colors">
+                    {title.slice(0, 2).toUpperCase()}
+                  </span>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-white font-bold text-lg mb-2">{anime.title}</h3>
-                  <p className="text-gray-400 text-sm mb-3">{anime.genre}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-yellow-400 flex items-center">
-                      <Star className="w-4 h-4 mr-1" />
-                      {anime.rating}
-                    </span>
-                    <span className="text-gray-400">{anime.episodes} episodes</span>
+                <div className="p-5">
+                  <h3 className="text-white font-bold mb-1 line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                    {title}
+                  </h3>
+                  <div className="flex items-center text-xs text-gray-500 mb-3">
+                    <TrendingUp className="w-3 h-3 mr-1 text-green-500" />
+                    Rising in popularity
                   </div>
+                  <button className="w-full py-2 bg-gray-700 hover:bg-indigo-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    View Details
+                  </button>
                 </div>
               </div>
             ))}
