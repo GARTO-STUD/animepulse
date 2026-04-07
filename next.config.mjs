@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ⚠️ تم إزالة output: 'export' لأنه يكسر الصفحات الديناميكية
-  // استخدمه فقط إذا كانت جميع صفحاتك static بالكامل
-  distDir: '.next',
+  output: 'export',
+  distDir: 'dist',
   images: {
     unoptimized: true,
     remotePatterns: [
