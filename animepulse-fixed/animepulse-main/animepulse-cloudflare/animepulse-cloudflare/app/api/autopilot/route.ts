@@ -139,7 +139,8 @@ async function runAutoPilot(saJson: string, geminiKey: string) {
   return { ok:true, added, sources:{rss:rssItems.length}, errors };
 }
 
-export async function GET(_req: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(req: NextRequest) {
   const saJson=process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!saJson) return NextResponse.json({ error:'FIREBASE_SERVICE_ACCOUNT_KEY not set' },{ status:500, headers:CORS });
   try {
