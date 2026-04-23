@@ -1,0 +1,29 @@
+# AnimePulse Cloudflare Worker Configuration
+# لـ Auto-Pilot فقط - يُنشر بـ `wrangler deploy`
+
+name = "animepulse"
+main = "worker.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV Namespace - Storage للأخبار والبيانات
+[[kv_namespaces]]
+binding = "ANIMEPULSE_KV"
+id = "05eaa7b73ed34611b6c673a961220461"
+preview_id = "05eaa7b73ed34611b6c673a961220461"
+
+# Cron Triggers - التشغيل التلقائي كل 6 ساعات
+[triggers]
+crons = ["0 */6 * * *"]
+
+# متغيرات البيئة للـ Production
+# ⚠️ لا تضع مفاتيح API هنا - استخدم wrangler secret بدلاً من ذلك
+# wrangler secret put CRON_SECRET
+# wrangler secret put GEMINI_API_KEY
+# wrangler secret put TELEGRAM_BOT_TOKEN
+# wrangler secret put TELEGRAM_CHANNEL_ID
+
+
+# إعدادات الـ Worker
+[placement]
+mode = "smart"

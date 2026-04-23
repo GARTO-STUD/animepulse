@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# ── Autopilot — runs every 6 hours ──────────────────────────
+[functions."scheduled-autopilot"]
+  schedule = "0 */6 * * *"
