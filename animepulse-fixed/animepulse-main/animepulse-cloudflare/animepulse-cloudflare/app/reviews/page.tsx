@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, User, Filter } from 'lucide-react';
+import { Star, User, Filter, MessageCircle } from 'lucide-react';
 
 interface Anime {
   mal_id: number;
