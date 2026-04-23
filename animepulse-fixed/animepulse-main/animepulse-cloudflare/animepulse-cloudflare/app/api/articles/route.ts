@@ -20,7 +20,8 @@ async function getFirebaseToken(saJson: string): Promise<string> {
   const p = b64(JSON.stringify({ iss:sa.client_email, sub:sa.client_email, aud:'https://oauth2.googleapis.com/token', iat:now, exp:now+3600, scope:'https://www.googleapis.com/auth/datastore' }));
   const pem = sa.private_key.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g,'');
   const key = await crypto.subtle.importKey('pkcs8', Uint8Array.from(atob(pem),c=>c.charCodeAt(0)), { name:'RSASSA-PKCS1-v1_5', hash:'SHA-256' }, false, ['sign']);
-  const sig = b64(String.fromCharCode(...new Uint8Array(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(`${h}.${p}`)))));
+  const sigBytes = new Uint8Array(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(`${h}.${p}`)));
+  const sig = b64(String.fromCharCode(...Array.from(sigBytes)));
   const res = await fetch('https://oauth2.googleapis.com/token', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${h}.${p}.${sig}` });
   return ((await res.json()) as {access_token:string}).access_token;
 }
