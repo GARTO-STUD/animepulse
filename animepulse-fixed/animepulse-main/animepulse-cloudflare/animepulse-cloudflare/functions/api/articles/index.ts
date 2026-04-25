@@ -131,7 +131,27 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const tag = url.searchParams.get('tag');
   const type = url.searchParams.get('type');
 
-  // ── Try KV cache first for speed ──────────────────────────────────────────
+  // ── 1. Check direct KV keys (written by Auto-Pilot worker) ────────────────
+  if (type === 'trending') {
+    const trending = await env.ANIMEPULSE_KV.get('trending');
+    if (trending) {
+      return new Response(trending, {
+        headers: { 'Content-Type': 'application/json', 'X-Source': 'KV-DIRECT', ...CORS },
+      });
+    }
+  } else if (!source && !tag) {
+    // If asking for generic news, check the 'news' key
+    const news = await env.ANIMEPULSE_KV.get('news');
+    if (news) {
+      const articles = JSON.parse(news);
+      const result = JSON.stringify({ articles: articles.slice(0, limit), total: articles.length });
+      return new Response(result, {
+        headers: { 'Content-Type': 'application/json', 'X-Source': 'KV-DIRECT', ...CORS },
+      });
+    }
+  }
+
+  // ── 2. Check cache for filtered requests ──────────────────────────────────
   const cacheKey = `articles_${type || 'list'}_${source || 'all'}_${tag || 'all'}_${limit}`;
   const cached = await env.ANIMEPULSE_KV.get(cacheKey);
   if (cached) {
@@ -140,15 +160,17 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     });
   }
 
-  // ── Fetch from Firestore ───────────────────────────────────────────────────
+  // ── 3. Fallback to Firestore ──────────────────────────────────────────────
   try {
+    if (!env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      return json({ articles: [], total: 0, warning: 'Firebase key missing' });
+    }
+
     const sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT_KEY);
     const token = await getFirebaseToken(env.FIREBASE_SERVICE_ACCOUNT_KEY);
     const projectId = sa.project_id;
 
     if (type === 'trending') {
-      const docs = await firestoreQuery(projectId, token, 'meta', 'updatedAt', 1);
-      // Get specific doc
       const docRes = await fetch(
         `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/meta/trending`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -159,7 +181,6 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
         await env.ANIMEPULSE_KV.put(cacheKey, result, { expirationTtl: 1800 });
         return new Response(result, { headers: { 'Content-Type': 'application/json', ...CORS } });
       }
-      return json({ anime: [], analysis: '', updatedAt: null });
     }
 
     // Articles query
@@ -169,11 +190,11 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       .filter(r => r.document?.fields)
       .map(r => parseDoc(r.document!.fields));
 
-    if (source) articles = articles.filter((a: Record<string, unknown>) => a.sourceType === source);
-    if (tag) articles = articles.filter((a: Record<string, unknown>) => Array.isArray(a.tags) && (a.tags as string[]).includes(tag));
+    if (source) articles = articles.filter((a: Record<string, any>) => a.sourceType === source);
+    if (tag) articles = articles.filter((a: Record<string, any>) => Array.isArray(a.tags) && (a.tags as string[]).includes(tag));
 
     const result = JSON.stringify({ articles: articles.slice(0, limit), total: articles.length });
-    await env.ANIMEPULSE_KV.put(cacheKey, result, { expirationTtl: 300 }); // 5 min cache
+    await env.ANIMEPULSE_KV.put(cacheKey, result, { expirationTtl: 300 });
     return new Response(result, { headers: { 'Content-Type': 'application/json', ...CORS } });
   } catch (e) {
     return json({ error: String(e) }, 500);

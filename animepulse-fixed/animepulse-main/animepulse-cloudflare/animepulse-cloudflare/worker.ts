@@ -353,23 +353,23 @@ function generateId(): string {
 }
 
 // Fetch real trending anime from Jikan API (MyAnimeList)
-async function fetchTrendingAnime(): Promise<string[]> {
+async function fetchTrendingAnime(): Promise<any[]> {
   try {
     const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
     if (!response.ok) throw new Error('Jikan API error');
-    const data: { data: Array<{ title: string }> } = await response.json();
-    return (data.data || []).map((anime) => anime.title).slice(0, 8);
+    const data: any = await response.json();
+    return (data.data || []).slice(0, 10);
   } catch {
-    console.warn('⚠️ Jikan API failed, using fallback');
-    return ['Solo Leveling', 'Jujutsu Kaisen', 'Demon Slayer', 'One Piece', 'Chainsaw Man'];
+    console.warn('⚠️ Jikan API failed, returning empty');
+    return [];
   }
 }
 
 // Post trending list to Telegram
-async function postTrendingToTelegram(trendingAnime: string[], env: Env): Promise<void> {
+async function postTrendingToTelegram(trendingAnime: any[], env: Env): Promise<void> {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   let message = `📈 **Trending Anime - ${today}**\n\n`;
-  trendingAnime.forEach((anime, i) => { message += `${i + 1}. ${anime}\n`; });
+  trendingAnime.forEach((anime, i) => { message += `${i + 1}. ${anime.title}\n`; });
   message += `\n🔥 What are you watching?\n📢 @AnimePulseChannel`;
 
   await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
