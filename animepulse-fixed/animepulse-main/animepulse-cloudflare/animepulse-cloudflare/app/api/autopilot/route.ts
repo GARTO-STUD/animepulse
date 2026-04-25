@@ -3,6 +3,7 @@
  * Uses Firebase REST API + Gemini directly (no firebase-admin)
  */
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 
