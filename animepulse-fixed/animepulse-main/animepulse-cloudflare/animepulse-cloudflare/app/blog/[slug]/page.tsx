@@ -1,4 +1,5 @@
 import Link from 'next/link';
+export const runtime = 'edge';
 import { ChevronLeft, Calendar, Clock, Tag } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
@@ -165,10 +166,6 @@ If you want Studio Ghibli, Disney+ is where you go. The entire Ghibli catalog, m
 Legally free options include Tubi (large catalog with ads), the official YouTube channels of several studios, and Crunchyroll's free tier (with ads and delayed simulcasts). Quality varies, but for those on a budget, these are viable starting points.`,
   },
 };
-
-export async function generateStaticParams() {
-  return Object.keys(POSTS).map(slug => ({ slug }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
