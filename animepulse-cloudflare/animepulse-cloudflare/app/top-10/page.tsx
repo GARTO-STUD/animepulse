@@ -34,7 +34,7 @@ export default function Top10Page() {
   useEffect(() => {
     fetch('https://api.jikan.moe/v4/top/anime?limit=10')
       .then(r => r.json())
-      .then(d => { setAnime(d.data || []); setLoading(false); })
+      .then((d: any) => { setAnime(d.data || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 

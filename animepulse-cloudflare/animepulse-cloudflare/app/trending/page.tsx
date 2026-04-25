@@ -78,7 +78,7 @@ export default function TrendingPage() {
           fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=20').then(r => r.json()),
           fetch('https://api.jikan.moe/v4/top/anime?limit=20').then(r => r.json()),
           fetch('https://api.jikan.moe/v4/top/anime?filter=bypopularity&limit=20').then(r => r.json()),
-        ]);
+        ]) as [any, any, any];
         setLists([airing.data || [], top.data || [], popular.data || []]);
       } catch (e) {
         console.error(e);

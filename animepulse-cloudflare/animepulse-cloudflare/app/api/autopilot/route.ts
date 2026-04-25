@@ -20,7 +20,7 @@ async function getFirebaseToken(saJson: string): Promise<string> {
   const p = b64(JSON.stringify({ iss:sa.client_email, sub:sa.client_email, aud:'https://oauth2.googleapis.com/token', iat:now, exp:now+3600, scope:'https://www.googleapis.com/auth/datastore' }));
   const pem = sa.private_key.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g,'');
   const key = await crypto.subtle.importKey('pkcs8', Uint8Array.from(atob(pem),c=>c.charCodeAt(0)), { name:'RSASSA-PKCS1-v1_5', hash:'SHA-256' }, false, ['sign']);
-  const sig = b64(String.fromCharCode(...new Uint8Array(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(`${h}.${p}`)))));
+  const sig = b64(String.fromCharCode(...new Uint8Array((await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(`${h}.${p}`))) as ArrayBuffer)));
   const res = await fetch('https://oauth2.googleapis.com/token', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${h}.${p}.${sig}` });
   return ((await res.json()) as {access_token:string}).access_token;
 }
@@ -133,7 +133,7 @@ async function runAutoPilot(saJson: string, geminiKey: string) {
     } catch(e) { errors.push(`Error "${item.title}": ${e}`); }
   }
   await fsBatchWrite(pid,token,'articles',existing.slice(0,200) as Record<string,unknown>[]);
-  const tr=await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=8').then(r=>r.ok?r.json():{data:[]}).catch(()=>({data:[]}));
+  const tr=(await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=8').then(r=>r.ok?r.json():{data:[]}).catch(()=>({data:[]})) ) as {data?:Array<{title:string}>};
   await fsSet(pid,token,'meta/trending',{ updatedAt:new Date().toISOString(), anime:(tr.data||[]).map((a:{title:string})=>({title:a.title})), analysis:'' });
   await fsSet(pid,token,'meta/autopilot-status',{ lastRun:new Date().toISOString(), articlesAdded:added, trendingUpdated:true, sources:{rss:rssItems.length,mal:0,reddit:0}, errors });
   return { ok:true, added, sources:{rss:rssItems.length}, errors };
@@ -145,7 +145,7 @@ export async function GET(req: NextRequest) {
   try {
     const sa=JSON.parse(saJson); const token=await getFirebaseToken(saJson); const pid=sa.project_id;
     const [statusRes, articles] = await Promise.all([
-      fetch(`https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/meta/autopilot-status`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json().then((d:{fields?:Record<string,unknown>})=>d.fields?Object.fromEntries(Object.entries(d.fields).map(([k,v])=>[k,fsVal(v)])):null):null),
+      fetch(`https://firestore.googleapis.com/v1/projects/${pid}/databases/(default)/documents/meta/autopilot-status`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json().then((d:any)=>d.fields?Object.fromEntries(Object.entries(d.fields as Record<string,unknown>).map(([k,v])=>[k,fsVal(v)])):null):null),
       fsQuery(pid,token,'articles',5),
     ]);
     return NextResponse.json({ ok:true, lastRun:(statusRes as Record<string,unknown>)?.lastRun??null, totalArticles:articles.length, latestArticles:articles.slice(0,5).map(a=>({id:a.id,title:a.title,publishedAt:a.publishedAt})), status:statusRes },{ headers:CORS });

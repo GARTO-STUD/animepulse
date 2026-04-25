@@ -77,7 +77,7 @@ export async function fetchMALTrending(): Promise<MALAnime[]> {
     const [airing, top] = await Promise.all([
       fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10').then(r => r.json()),
       fetch('https://api.jikan.moe/v4/top/anime?limit=10').then(r => r.json()),
-    ]);
+    ]) as [any, any];
     const merged = [...(airing.data || []), ...(top.data || [])];
     const seen = new Set<number>();
     return merged.filter((a: MALAnime) => seen.has(a.mal_id) ? false : (seen.add(a.mal_id), true)).slice(0, 30);
@@ -88,7 +88,7 @@ export async function fetchMALNewsAsItems(): Promise<AnimeNewsItem[]> {
   try {
     const res = await fetch('https://api.jikan.moe/v4/news?limit=10');
     if (!res.ok) return [];
-    const data = await res.json();
+    const data = (await res.json()) as any;
     return (data.data || []).map((item: {
       title: string; url: string; excerpt: string; date: string;
       images?: { jpg?: { image_url: string } };
@@ -124,7 +124,7 @@ export async function fetchRedditAnime(): Promise<RedditPost[]> {
       fetch('https://www.reddit.com/r/anime/rising.json?limit=5', {
         headers: { 'User-Agent': 'AnimePulse-Bot/2.0' },
       }).then(r => r.json()),
-    ]);
+    ]) as [any, any];
     const posts = [...(hot?.data?.children || []), ...(rising?.data?.children || [])];
     return posts
       .map((p: { data: {

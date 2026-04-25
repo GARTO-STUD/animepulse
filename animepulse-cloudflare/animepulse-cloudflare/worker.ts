@@ -301,7 +301,7 @@ async function generateArticle(
       }
     );
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const [content, rest] = text.split('---SUMMARY---');
     const [summary, tagsStr] = (rest || '').split('---TAGS---');
@@ -341,7 +341,7 @@ async function postToTelegram(newsItem: NewsItem, env: Env): Promise<boolean> {
       }
     );
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     return data.ok;
   } catch {
     return false;

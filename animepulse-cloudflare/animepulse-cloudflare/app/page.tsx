@@ -31,7 +31,7 @@ export default function HomePage() {
           fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=6').then(r => r.json()),
           fetch('https://api.jikan.moe/v4/top/anime?limit=5').then(r => r.json()),
           fetch('https://api.jikan.moe/v4/seasons/now?limit=6').then(r => r.json()),
-        ]);
+        ]) as [any, any, any];
         setTrending(t.data || []);
         setTopAll(top.data || []);
         setSeasonal(s.data || []);

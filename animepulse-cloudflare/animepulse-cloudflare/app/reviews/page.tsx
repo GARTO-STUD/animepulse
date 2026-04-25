@@ -47,7 +47,7 @@ export default function ReviewsPage() {
   useEffect(() => {
     fetch('https://api.jikan.moe/v4/top/anime?limit=24')
       .then(r => r.json())
-      .then(d => { setAnime(d.data || []); setLoading(false); })
+      .then((d: any) => { setAnime(d.data || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 

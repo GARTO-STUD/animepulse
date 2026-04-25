@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChevronLeft, Calendar, Clock, Tag } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { use } from 'react';
 
 const POSTS: Record<string, {
   title: string; summary: string; category: string; date: string;
@@ -167,11 +168,12 @@ Legally free options include Tubi (large catalog with ads), the official YouTube
 };
 
 export async function generateStaticParams() {
-  return Object.keys(POSTS).map(slug => ({ slug }));
+  return Object.keys(POSTS).map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = POSTS[params.slug];
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = POSTS[slug];
   if (!post) return { title: 'Post Not Found | AnimePulse' };
   return {
     title: `${post.title} | AnimePulse Blog`,
@@ -180,12 +182,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const post = POSTS[params.slug];
+export default function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const post = POSTS[slug];
   if (!post) notFound();
 
   const otherPosts = Object.entries(POSTS)
-    .filter(([s]) => s !== params.slug)
+    .filter(([s]) => s !== slug)
     .slice(0, 3);
 
   return (

@@ -76,7 +76,7 @@ export default function NewsDetailClient() {
     if (!id) return;
     fetch('/api/articles?limit=100')
       .then(r => r.json())
-      .then(data => {
+      .then((data: any) => {
         const all: Article[] = data.articles || [];
         const found = all.find(a => a.id === id);
         setArticle(found || null);
@@ -232,3 +232,4 @@ export default function NewsDetailClient() {
       )}
     </div>
   );
+}

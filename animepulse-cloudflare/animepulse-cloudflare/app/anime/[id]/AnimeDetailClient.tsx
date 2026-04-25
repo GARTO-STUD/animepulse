@@ -56,7 +56,7 @@ export default function AnimeDetailClient() {
 
     fetch(`https://api.jikan.moe/v4/anime/${id}/full`)
       .then(r => r.json())
-      .then(data => {
+      .then((data: any) => {
         if (data.data) {
           setAnime(data.data);
           return fetch(`https://api.jikan.moe/v4/anime/${id}/recommendations`);
@@ -66,7 +66,7 @@ export default function AnimeDetailClient() {
         }
       })
       .then(r => r?.json())
-      .then(rec => {
+      .then((rec: any) => {
         if (rec?.data) {
           setRelated(rec.data.slice(0, 6).map((r: { entry: RelatedAnime }) => r.entry));
         }
@@ -311,3 +311,4 @@ export default function AnimeDetailClient() {
       </div>
     </div>
   );
+}

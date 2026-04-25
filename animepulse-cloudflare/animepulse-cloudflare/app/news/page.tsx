@@ -103,7 +103,7 @@ export default function NewsPage() {
       if (tab !== 'all') params.set('source', tab);
       const res = await fetch(`/api/articles?${params}`);
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as any;
         setArticles(data.articles || []);
         setTotal(data.total || 0);
       }

@@ -66,7 +66,7 @@ And 3-5 relevant tags at the end, separated by "---TAGS---" (comma-separated)
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     // Parse the response
@@ -160,7 +160,7 @@ Write a short paragraph (3-4 sentences) explaining what makes these anime popula
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   } catch (error) {
     console.error('Error generating trending analysis:', error);
@@ -195,7 +195,7 @@ export async function generateQuickReview(
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
     return data.candidates?.[0]?.content?.parts?.[0]?.text || `${animeTitle} delivers an exceptional ${genre} experience worth watching.`;
   } catch {
     return `${animeTitle} delivers an exceptional ${genre} experience with stunning visuals and compelling storytelling.`;
