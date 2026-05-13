@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <rect width="40" height="40" x="0" y="10" rx="10" fill="url(#g)"/>
+  <path d="M10 38 L16 18 L22 32 L28 18 L34 38" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="50" y="38" font-family="system-ui,sans-serif" font-weight="900" font-size="22" fill="white">Anime</text>
+  <text x="116" y="38" font-family="system-ui,sans-serif" font-weight="900" font-size="22" fill="#e85d04">Pulse</text>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e85d04"/>
+      <stop offset="1" stop-color="#f48c06"/>
+    </linearGradient>
+  </defs>
+</svg>
