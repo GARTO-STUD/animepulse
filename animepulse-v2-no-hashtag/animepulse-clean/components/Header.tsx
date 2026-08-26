@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, Flame, Shield } from 'lucide-react';
+import { Menu, X, Search, Shield } from 'lucide-react';
 
 const navLinks = [
   { name: 'Home',     href: '/' },
@@ -13,6 +13,11 @@ const navLinks = [
   { name: 'Calendar', href: '/calendar' },
   { name: 'Reviews',  href: '/reviews' },
 ];
+
+/** An original editorial mark: a story-frame, broadcast pulse, and rising spark. */
+function PulseMark() {
+  return <span className="pulse-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="pulse-field" x1="4" y1="4" x2="44" y2="44"><stop stopColor="#7c5cff"/><stop offset="1" stopColor="#403078"/></linearGradient></defs><rect x="4" y="4" width="40" height="40" rx="14" className="pulse-mark__field"/><path d="M10 27h6l3.4-9 4.3 17 3.4-10H38" className="pulse-mark__wave"/><circle cx="35.5" cy="14.5" r="3.5" className="pulse-mark__spark"/></svg></span>;
+}
 
 export default function Header() {
   const [open, setOpen]             = useState(false);
@@ -57,11 +62,9 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Link href="/" onClick={handleLogoClick} className="flex items-center gap-2 group select-none">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e85d04] to-[#f48c06] flex items-center justify-center shadow-lg shadow-orange-500/25">
-                <Flame className="w-4 h-4 text-white" />
-              </div>
+              <PulseMark />
               <span
-                className="text-xl font-black tracking-tight text-[#0f172a] group-hover:text-[#e85d04] transition-colors"
+                className="brand-wordmark text-xl font-black tracking-tight text-[#0f172a] group-hover:text-[#7c5cff] transition-colors"
                 style={{ fontFamily: 'var(--font-syne)' }}
               >
                 Anime<span className="text-[#e85d04]">Pulse</span>

@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
-  <rect width="40" height="40" x="0" y="10" rx="10" fill="url(#g)"/>
-  <path d="M10 38 L16 18 L22 32 L28 18 L34 38" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="50" y="38" font-family="system-ui,sans-serif" font-weight="900" font-size="22" fill="white">Anime</text>
-  <text x="116" y="38" font-family="system-ui,sans-serif" font-weight="900" font-size="22" fill="#e85d04">Pulse</text>
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#e85d04"/>
-      <stop offset="1" stop-color="#f48c06"/>
-    </linearGradient>
-  </defs>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 244 60" fill="none"><defs><linearGradient id="p" x1="5" y1="4" x2="45" y2="46" gradientUnits="userSpaceOnUse"><stop stop-color="#7c5cff"/><stop offset="1" stop-color="#403078"/></linearGradient></defs><rect x="4" y="8" width="44" height="44" rx="15" fill="url(#p)"/><path d="M12 34h7l4-11 5 20 4-12h9" stroke="#fff8ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="39" cy="19" r="4" fill="#f9c74f" stroke="#fff7dc" stroke-width="1.5"/><text x="61" y="39" font-family="Arial,sans-serif" font-weight="800" font-size="26" letter-spacing="-1.7" fill="#17142b">Anime</text><text x="138" y="39" font-family="Arial,sans-serif" font-weight="800" font-size="26" letter-spacing="-1.7" fill="#7c5cff">Pulse</text></svg>

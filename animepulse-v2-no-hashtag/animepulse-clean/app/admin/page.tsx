@@ -462,6 +462,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setArticles(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+        await loadArticles();
         toast.success(status === 'published' ? '✅ Article published!' : '🚫 Article rejected');
       } else {
         toast.error('Failed to update article status');
@@ -482,6 +483,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setArticles(prev => prev.filter(a => a.id !== id));
+        await loadArticles();
         toast.success('🗑️ Article deleted');
       } else {
         toast.error('Failed to delete article');
@@ -542,8 +544,8 @@ export default function AdminDashboard() {
 
   // ── Login Screen ──────────────────────────────────────────────────────────
   if (!authed) return (
-    <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white border border-[#e2e8f4] rounded-2xl p-8">
+    <div className="admin-shell min-h-screen bg-[#f8f9fc] flex items-center justify-center p-4">
+      <div className="admin-login w-full max-w-sm bg-white border border-[#e2e8f4] rounded-2xl p-8">
         <div className="flex items-center gap-3 mb-8">
           <Shield className="w-6 h-6 text-[#e85d04]" />
           <h1 className="text-[#0f172a] font-bold text-lg">Admin Access</h1>
@@ -584,7 +586,7 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] text-[#0f172a]">
+    <div className="admin-shell min-h-screen bg-[#f8f9fc] text-[#0f172a]">
       {editingArticle && (
         <EditModal
           article={editingArticle}
@@ -592,7 +594,7 @@ export default function AdminDashboard() {
           onClose={() => setEditingArticle(null)}
         />
       )}
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="admin-dashboard max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <div>
@@ -631,7 +633,7 @@ export default function AdminDashboard() {
             { label: 'Published', value: stats.published, icon: <TrendingUp className="w-4 h-4" />, color: 'text-green-400' },
             { label: 'Avg Score', value: stats.avgScore, icon: <Star className="w-4 h-4" />, color: 'text-[#e85d04]' },
           ].map(({ label, value, icon, color }) => (
-            <div key={label} className="bg-white border border-[#e2e8f4] rounded-xl p-4">
+            <div key={label} className="admin-stat bg-white border border-[#e2e8f4] rounded-xl p-4">
               <div className={`flex items-center gap-2 text-xs text-[#64748b] mb-2`}>{icon}{label}</div>
               <div className={`text-2xl font-black ${color}`}>{loading ? '…' : value}</div>
             </div>
@@ -655,7 +657,7 @@ export default function AdminDashboard() {
            filtered.length === 0 ? (
             <div className="text-center py-16"><div className="text-4xl mb-4 text-green-400">✓</div><p className="text-[#0f172a] font-bold">Nothing here</p></div>
            ) : filtered.map(article => (
-            <div key={article.id} className="bg-white border border-[#e2e8f4] rounded-2xl p-5 hover:border-[#e85d04]/20 transition-all">
+            <div key={article.id} className="admin-article bg-white border border-[#e2e8f4] rounded-2xl p-5 hover:border-[#e85d04]/20 transition-all">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -696,7 +698,7 @@ export default function AdminDashboard() {
 
         {/* AutoPilot Stats */}
         {autopilotStatus && (
-          <div className="mt-8 bg-white border border-[#e2e8f4] rounded-2xl p-5">
+          <div className="admin-autopilot mt-8 bg-white border border-[#e2e8f4] rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-4"><Activity className="w-4 h-4 text-[#e85d04]" /><h2 className="text-[#0f172a] font-bold text-sm">AutoPilot Stats</h2></div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
               <div className="bg-[#f8f9fc] rounded-xl p-3"><div className="text-[#64748b] mb-1">Today</div><div className="text-[#0f172a] font-bold">{autopilotStatus.todayCount ?? 0} / {autopilotStatus.dailyLimit ?? 5}</div></div>
