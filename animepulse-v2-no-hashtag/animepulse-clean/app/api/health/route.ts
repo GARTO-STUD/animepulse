@@ -17,7 +17,6 @@
  *  - Keyword: "status":"ok"
  *  - Interval: 5 minutes
  */
-export const runtime = 'edge';
 
 import { NextResponse } from 'next/server';
 import { getFirebaseToken, fsGet } from '@/lib/firebase-rest';

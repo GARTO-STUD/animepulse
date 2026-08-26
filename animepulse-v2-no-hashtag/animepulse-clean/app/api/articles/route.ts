@@ -2,7 +2,6 @@
  * GET /api/articles — Articles listing with pagination, filtering, caching
  * Edge Runtime (Cloudflare Pages compatible)
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirebaseToken, fsQuery, fsVal } from '@/lib/firebase-rest';

@@ -67,11 +67,11 @@ NEXT_PUBLIC_ADSENSE_PUBLISHER_ID=ca-pub-7944585824292210
 NEXT_PUBLIC_APP_URL=https://animepulse.vercel.app
 ```
 
-### Alternative: Deploy to Cloudflare Pages
-```bash
-npm run build
-# Upload the 'dist' folder to Cloudflare Pages
-```
+### Cloudflare deployment
+
+This is a dynamic Next.js application. Deploy it as a **Cloudflare Worker**, not Pages.
+See [DEPLOY-CLOUDFLARE.md](./DEPLOY-CLOUDFLARE.md) for the exact Git deployment root,
+build command, deploy command, bindings, and secrets.
 
 ## 📁 Project Structure
 

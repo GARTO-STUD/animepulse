@@ -5,7 +5,6 @@
  * - Constant-time comparison to prevent timing attacks
  * - Returns httpOnly session cookie (8h) using signed JWT
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createSession, verifySession } from '@/lib/session';

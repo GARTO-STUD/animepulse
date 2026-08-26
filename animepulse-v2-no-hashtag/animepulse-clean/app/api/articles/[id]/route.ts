@@ -1,7 +1,6 @@
 /**
  * GET /api/articles/[id] — Fetch single article + increment view counter
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirebaseToken, fsGet, fsPatch } from '@/lib/firebase-rest';

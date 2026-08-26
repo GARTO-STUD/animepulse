@@ -3,7 +3,6 @@
  */
 import type { Metadata } from 'next';
 
-export const runtime = 'edge';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://animepulse.online';
 

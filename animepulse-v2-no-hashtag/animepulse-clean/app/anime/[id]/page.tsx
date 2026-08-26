@@ -1,5 +1,4 @@
 // Server component wrapper for /anime/[id]
-export const runtime = 'edge';
 import type { Metadata } from 'next';
 import AnimeDetailClient from './AnimeDetailClient';
 

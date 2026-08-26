@@ -3,7 +3,6 @@
  * Auth: httpOnly session cookie (set by /api/admin-auth)
  * Fallback: x-review-password header (legacy, kept for cron compatibility)
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import {

@@ -10,7 +10,6 @@
  *  - Groq AI (primary) + Gemini (fallback)
  *  - Structured content: hook, context, highlights, opinion, next steps
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import {

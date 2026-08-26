@@ -1,7 +1,6 @@
 /**
  * GET /feed.xml — RSS 2.0 feed for AnimePulse articles
  */
-export const runtime = 'edge';
 
 import { NextResponse } from 'next/server';
 import { getFirebaseToken, fsQuery, fsVal } from '@/lib/firebase-rest';

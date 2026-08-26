@@ -2,7 +2,6 @@
  * GET /api/blog — Fetch autopilot-generated blog posts from Firestore
  * Falls back to static posts if Firestore not configured
  */
-export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirebaseToken, fsVal } from '@/lib/firebase-rest';
