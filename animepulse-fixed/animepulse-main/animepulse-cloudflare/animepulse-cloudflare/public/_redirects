@@ -1,4 +1,0 @@
-# SPA fallback - serves index.html for all unmatched routes
-# This allows client-side routing to work for dynamic routes like /news/[id]
-/news/*    /news/index.html    200
-/anime/*   /anime/index.html   200
